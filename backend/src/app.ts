@@ -14,6 +14,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+
 app.use(errorHandler);
 
 export default app;
