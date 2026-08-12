@@ -54,3 +54,27 @@ export const getTeamById = async (teamId: string, userId: string) => {
     },
   });
 };
+
+export const updateTeam = async (
+  teamId: string,
+  userId: string,
+  name: string,
+) => {
+  const membership = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        userId,
+        teamId,
+      },
+    },
+  });
+
+  if (!membership || membership.role !== 'OWNER') {
+    return null;
+  }
+
+  return prisma.team.update({
+    where: { id: teamId },
+    data: { name },
+  });
+};
