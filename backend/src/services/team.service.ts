@@ -21,3 +21,36 @@ export const createTeam = async ({ name, userId }: CreateTeamInput) => {
     },
   });
 };
+
+export const getMyTeams = async (userId: string) => {
+  return prisma.team.findMany({
+    where: {
+      members: {
+        some: {
+          userId,
+        },
+      },
+    },
+
+    include: {
+      members: true,
+    },
+  });
+};
+
+export const getTeamById = async (teamId: string, userId: string) => {
+  return prisma.team.findFirst({
+    where: {
+      id: teamId,
+      members: {
+        some: {
+          userId,
+        },
+      },
+    },
+
+    include: {
+      members: true,
+    },
+  });
+};
