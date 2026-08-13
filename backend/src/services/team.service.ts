@@ -78,3 +78,30 @@ export const updateTeam = async (
     data: { name },
   });
 };
+
+export const deleteTeam = async (teamId: string, userId: string) => {
+  const membership = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        userId,
+        teamId,
+      },
+    },
+  });
+
+  if (!membership || membership.role !== 'OWNER') {
+    return false;
+  }
+
+  await prisma.$transaction([
+    prisma.teamMember.deleteMany({
+      where: { teamId },
+    }),
+
+    prisma.team.delete({
+      where: { id: teamId },
+    }),
+  ]);
+
+  return true;
+};

@@ -5,6 +5,7 @@ import {
   getMyTeams,
   getTeamById,
   updateTeam,
+  deleteTeam,
 } from '../services/team.service.js';
 
 export const createTeamController = async (req: Request, res: Response) => {
@@ -107,5 +108,37 @@ export const updateTeamController = async (req: Request, res: Response) => {
   return res.status(200).json({
     success: true,
     data: team,
+  });
+};
+
+export const deleteTeamController = async (req: Request, res: Response) => {
+  if (!req.user || typeof req.user === 'string') {
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication required',
+    });
+  }
+
+  const teamId = req.params.teamId;
+
+  if (typeof teamId !== 'string') {
+    return res.status(400).json({
+      cuccess: false,
+      message: 'Invlid teamId',
+    });
+  }
+
+  const deleted = await deleteTeam(teamId, req.user.userId);
+
+  if (!deleted) {
+    return res.status(403).json({
+      success: false,
+      message: 'Only the team owner can delete this team',
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: 'Team deleted successfully',
   });
 };
