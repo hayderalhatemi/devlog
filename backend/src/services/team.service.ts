@@ -132,3 +132,33 @@ export const addTeamMember = async (
     },
   });
 };
+
+export const removeTeamMember = async (
+  teamId: string,
+  ownerId: string,
+  userId: string,
+) => {
+  const ownerMembership = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        userId: ownerId,
+        teamId,
+      },
+    },
+  });
+
+  if (!ownerMembership || ownerMembership.role !== 'OWNER') {
+    return false;
+  }
+
+  await prisma.teamMember.delete({
+    where: {
+      userId_teamId: {
+        userId,
+        teamId,
+      },
+    },
+  });
+
+  return true;
+};
