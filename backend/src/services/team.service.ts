@@ -105,3 +105,30 @@ export const deleteTeam = async (teamId: string, userId: string) => {
 
   return true;
 };
+
+export const addTeamMember = async (
+  teamId: string,
+  ownerId: string,
+  userId: string,
+) => {
+  const ownerMembership = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        userId: ownerId,
+        teamId,
+      },
+    },
+  });
+
+  if (!ownerMembership || ownerMembership.role !== 'OWNER') {
+    return null;
+  }
+
+  return prisma.teamMember.create({
+    data: {
+      teamId,
+      userId,
+      role: 'MEMBER',
+    },
+  });
+};

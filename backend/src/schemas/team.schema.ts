@@ -7,3 +7,7 @@ export const createTeamSchema = z.object({
 export const updateTeamSchema = z.object({
   name: z.string().min(2).max(100),
 });
+
+export const addTeamMemberSchema = z.object({
+  userId: z.string().min(1),
+});

@@ -1,11 +1,16 @@
 import type { Request, Response } from 'express';
-import { createTeamSchema, updateTeamSchema } from '../schemas/team.schema.js';
+import {
+  createTeamSchema,
+  updateTeamSchema,
+  addTeamMemberSchema,
+} from '../schemas/team.schema.js';
 import {
   createTeam,
   getMyTeams,
   getTeamById,
   updateTeam,
   deleteTeam,
+  addTeamMember,
 } from '../services/team.service.js';
 
 export const createTeamController = async (req: Request, res: Response) => {
@@ -140,5 +145,39 @@ export const deleteTeamController = async (req: Request, res: Response) => {
   return res.status(200).json({
     success: true,
     message: 'Team deleted successfully',
+  });
+};
+
+export const addTeamMemberController = async (req: Request, res: Response) => {
+  if (!req.user || typeof req.user === 'string') {
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication required',
+    });
+  }
+
+  const teamId = req.params.teamId;
+
+  if (typeof teamId !== 'string') {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid team id',
+    });
+  }
+
+  const data = addTeamMemberSchema.parse(req.body);
+
+  const member = await addTeamMember(teamId, req.user.userId, data.userId);
+
+  if (!member) {
+    return res.status(403).json({
+      success: false,
+      messge: 'Only the team owner can add members',
+    });
+  }
+
+  return res.status(201).json({
+    success: true,
+    data: member,
   });
 };
