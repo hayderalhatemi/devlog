@@ -162,3 +162,34 @@ export const removeTeamMember = async (
 
   return true;
 };
+
+export const getTeamMembers = async (teamId: string, userId: string) => {
+  const membership = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        teamId,
+        userId,
+      },
+    },
+  });
+
+  if (!membership) {
+    return null;
+  }
+
+  return prisma.teamMember.findMany({
+    where: { teamId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'asc',
+    },
+  });
+};

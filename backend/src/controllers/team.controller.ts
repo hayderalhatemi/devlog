@@ -12,6 +12,7 @@ import {
   deleteTeam,
   addTeamMember,
   removeTeamMember,
+  getTeamMembers,
 } from '../services/team.service.js';
 
 export const createTeamController = async (req: Request, res: Response) => {
@@ -216,5 +217,37 @@ export const removeTeamMemberController = async (
   return res.status(200).json({
     success: true,
     message: 'Team member removed successfully',
+  });
+};
+
+export const getTeamMembersController = async (req: Request, res: Response) => {
+  if (!req.user || typeof req.user === 'string') {
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication required',
+    });
+  }
+
+  const teamId = req.params.teamId;
+
+  if (typeof teamId !== 'string') {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid team id',
+    });
+  }
+
+  const members = await getTeamMembers(teamId, req.user.userId);
+
+  if (!members) {
+    return res.status(403).json({
+      success: false,
+      message: 'You are not a member of this team',
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: members,
   });
 };

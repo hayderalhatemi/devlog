@@ -36,7 +36,7 @@ model TeamMember {
   userId    String
   teamId    String
   role      String   @default("MEMBER")
-  createdAT DateTime @default(now())
+  createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
   team Team @relation(fields: [teamId], references: [id])
