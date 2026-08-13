@@ -11,3 +11,7 @@ export const updateTeamSchema = z.object({
 export const addTeamMemberSchema = z.object({
   userId: z.string().min(1),
 });
+
+export const updateTeamMemberRoleSchema = z.object({
+  role: z.enum(['ADMIN', 'MEMBER']),
+});

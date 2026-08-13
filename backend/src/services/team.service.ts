@@ -193,3 +193,35 @@ export const getTeamMembers = async (teamId: string, userId: string) => {
     },
   });
 };
+
+export const updateTeamMemberRole = async (
+  teamId: string,
+  ownerId: string,
+  userId: string,
+  role: 'ADMIN' | 'MEMBER',
+) => {
+  const ownerMembership = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        userId: ownerId,
+        teamId,
+      },
+    },
+  });
+
+  if (!ownerMembership || ownerMembership.role !== 'OWNER') {
+    return null;
+  }
+
+  return prisma.teamMember.update({
+    where: {
+      userId_teamId: {
+        userId,
+        teamId,
+      },
+    },
+    data: {
+      role,
+    },
+  });
+};

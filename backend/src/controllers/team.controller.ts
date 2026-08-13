@@ -3,6 +3,7 @@ import {
   createTeamSchema,
   updateTeamSchema,
   addTeamMemberSchema,
+  updateTeamMemberRoleSchema,
 } from '../schemas/team.schema.js';
 import {
   createTeam,
@@ -13,6 +14,7 @@ import {
   addTeamMember,
   removeTeamMember,
   getTeamMembers,
+  updateTeamMemberRole,
 } from '../services/team.service.js';
 
 export const createTeamController = async (req: Request, res: Response) => {
@@ -249,5 +251,48 @@ export const getTeamMembersController = async (req: Request, res: Response) => {
   return res.status(200).json({
     success: true,
     data: members,
+  });
+};
+
+export const updateTeamMemberRoleController = async (
+  req: Request,
+  res: Response,
+) => {
+  if (!req.user || typeof req.user === 'string') {
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication required',
+    });
+  }
+
+  const teamId = req.params.teamId;
+  const userId = req.params.userId;
+
+  if (typeof teamId !== 'string' || typeof userId !== 'string') {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid team or user id',
+    });
+  }
+
+  const data = updateTeamMemberRoleSchema.parse(req.body);
+
+  const member = await updateTeamMemberRole(
+    teamId,
+    req.user.userId,
+    userId,
+    data.role,
+  );
+
+  if (!member) {
+    return res.status(403).json({
+      success: false,
+      message: 'Only the team owner can change the team roles',
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: member,
   });
 };
