@@ -1,4 +1,5 @@
 import { prisma } from '../config/prisma.js';
+import { AppError } from '../utils/app-error.js';
 
 type CreateTeamInput = {
   name: string;
@@ -122,6 +123,19 @@ export const addTeamMember = async (
 
   if (!ownerMembership || ownerMembership.role !== 'OWNER') {
     return null;
+  }
+
+  const existingMember = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        userId,
+        teamId,
+      },
+    },
+  });
+
+  if (existingMember) {
+    throw new AppError('User is already a team member', 409);
   }
 
   return prisma.teamMember.create({
