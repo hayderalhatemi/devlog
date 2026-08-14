@@ -16,20 +16,23 @@ import {
   getTeamMembers,
   updateTeamMemberRole,
 } from '../services/team.service.js';
+import { AppError } from '../utils/app-error.js';
+
+const getUser = (req: Request) => {
+  if (!req.user) {
+    throw new AppError('Authentication required', 401);
+  }
+
+  return req.user;
+};
 
 export const createTeamController = async (req: Request, res: Response) => {
+  const user = getUser(req);
   const data = createTeamSchema.parse(req.body);
-
-  if (!req.user || typeof req.user === 'string') {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required',
-    });
-  }
 
   const team = await createTeam({
     name: data.name,
-    userId: req.user.userId,
+    userId: user.userId,
   });
 
   return res.status(201).json({
@@ -39,14 +42,9 @@ export const createTeamController = async (req: Request, res: Response) => {
 };
 
 export const getMyTeamsController = async (req: Request, res: Response) => {
-  if (!req.user || typeof req.user === 'string') {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required',
-    });
-  }
+  const user = getUser(req);
 
-  const teams = await getMyTeams(req.user.userId);
+  const teams = await getMyTeams(user.userId);
 
   return res.status(200).json({
     success: true,
@@ -55,12 +53,7 @@ export const getMyTeamsController = async (req: Request, res: Response) => {
 };
 
 export const getTeamByIdController = async (req: Request, res: Response) => {
-  if (!req.user || typeof req.user === 'string') {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required',
-    });
-  }
+  const user = getUser(req);
 
   const teamId = req.params.teamId;
 
@@ -71,7 +64,7 @@ export const getTeamByIdController = async (req: Request, res: Response) => {
     });
   }
 
-  const team = await getTeamById(teamId, req.user.userId);
+  const team = await getTeamById(teamId, user.userId);
 
   if (!team) {
     return res.status(404).json({
@@ -87,12 +80,7 @@ export const getTeamByIdController = async (req: Request, res: Response) => {
 };
 
 export const updateTeamController = async (req: Request, res: Response) => {
-  if (!req.user || typeof req.user === 'string') {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required',
-    });
-  }
+  const user = getUser(req);
 
   const teamId = req.params.teamId;
 
@@ -105,7 +93,7 @@ export const updateTeamController = async (req: Request, res: Response) => {
 
   const data = updateTeamSchema.parse(req.body);
 
-  const team = await updateTeam(teamId, req.user.userId, data.name);
+  const team = await updateTeam(teamId, user.userId, data.name);
 
   if (!team) {
     return res.status(403).json({
@@ -121,23 +109,18 @@ export const updateTeamController = async (req: Request, res: Response) => {
 };
 
 export const deleteTeamController = async (req: Request, res: Response) => {
-  if (!req.user || typeof req.user === 'string') {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required',
-    });
-  }
+  const user = getUser(req);
 
   const teamId = req.params.teamId;
 
   if (typeof teamId !== 'string') {
     return res.status(400).json({
       success: false,
-      message: 'Invalid teamId',
+      message: 'Invalid team id',
     });
   }
 
-  const deleted = await deleteTeam(teamId, req.user.userId);
+  const deleted = await deleteTeam(teamId, user.userId);
 
   if (!deleted) {
     return res.status(403).json({
@@ -153,12 +136,7 @@ export const deleteTeamController = async (req: Request, res: Response) => {
 };
 
 export const addTeamMemberController = async (req: Request, res: Response) => {
-  if (!req.user || typeof req.user === 'string') {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required',
-    });
-  }
+  const user = getUser(req);
 
   const teamId = req.params.teamId;
 
@@ -171,7 +149,7 @@ export const addTeamMemberController = async (req: Request, res: Response) => {
 
   const data = addTeamMemberSchema.parse(req.body);
 
-  const member = await addTeamMember(teamId, req.user.userId, data.userId);
+  const member = await addTeamMember(teamId, user.userId, data.userId);
 
   if (!member) {
     return res.status(403).json({
@@ -190,12 +168,7 @@ export const removeTeamMemberController = async (
   req: Request,
   res: Response,
 ) => {
-  if (!req.user || typeof req.user === 'string') {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required',
-    });
-  }
+  const user = getUser(req);
 
   const teamId = req.params.teamId;
   const userId = req.params.userId;
@@ -207,7 +180,7 @@ export const removeTeamMemberController = async (
     });
   }
 
-  const removed = await removeTeamMember(teamId, req.user.userId, userId);
+  const removed = await removeTeamMember(teamId, user.userId, userId);
 
   if (!removed) {
     return res.status(403).json({
@@ -223,12 +196,7 @@ export const removeTeamMemberController = async (
 };
 
 export const getTeamMembersController = async (req: Request, res: Response) => {
-  if (!req.user || typeof req.user === 'string') {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required',
-    });
-  }
+  const user = getUser(req);
 
   const teamId = req.params.teamId;
 
@@ -239,7 +207,7 @@ export const getTeamMembersController = async (req: Request, res: Response) => {
     });
   }
 
-  const members = await getTeamMembers(teamId, req.user.userId);
+  const members = await getTeamMembers(teamId, user.userId);
 
   if (!members) {
     return res.status(403).json({
@@ -258,12 +226,7 @@ export const updateTeamMemberRoleController = async (
   req: Request,
   res: Response,
 ) => {
-  if (!req.user || typeof req.user === 'string') {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required',
-    });
-  }
+  const user = getUser(req);
 
   const teamId = req.params.teamId;
   const userId = req.params.userId;
@@ -279,7 +242,7 @@ export const updateTeamMemberRoleController = async (
 
   const member = await updateTeamMemberRole(
     teamId,
-    req.user.userId,
+    user.userId,
     userId,
     data.role,
   );
@@ -287,7 +250,7 @@ export const updateTeamMemberRoleController = async (
   if (!member) {
     return res.status(403).json({
       success: false,
-      message: 'Only the team owner can change the team roles',
+      message: 'Only the team owner can change team roles',
     });
   }
 

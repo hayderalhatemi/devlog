@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
 import { AppError } from '../utils/app-error.js';
+import type { AuthPayload } from '../types/express.js';
 
 export const authMiddleware = (
   req: Request,
@@ -19,7 +20,11 @@ export const authMiddleware = (
   try {
     const decoded = jwt.verify(token, env.JWT_SECRET);
 
-    req.user = decoded;
+    if (typeof decoded === 'string') {
+      throw new AppError('Invalid token', 401);
+    }
+
+    req.user = decoded as AuthPayload;
 
     next();
   } catch {
