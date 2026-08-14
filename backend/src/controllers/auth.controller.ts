@@ -19,7 +19,7 @@ export const login = async (req: Request, res: Response) => {
   const result = await loginUser(data);
 
   res.status(200).json({
-    seccess: true,
+    success: true,
     data: result,
   });
 };

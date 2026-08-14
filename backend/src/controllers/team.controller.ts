@@ -132,8 +132,8 @@ export const deleteTeamController = async (req: Request, res: Response) => {
 
   if (typeof teamId !== 'string') {
     return res.status(400).json({
-      cuccess: false,
-      message: 'Invlid teamId',
+      success: false,
+      message: 'Invalid teamId',
     });
   }
 
@@ -176,7 +176,7 @@ export const addTeamMemberController = async (req: Request, res: Response) => {
   if (!member) {
     return res.status(403).json({
       success: false,
-      messge: 'Only the team owner can add members',
+      message: 'Only the team owner can add members',
     });
   }
 
