@@ -248,10 +248,7 @@ export const updateTeamMemberRoleController = async (
   );
 
   if (!member) {
-    return res.status(403).json({
-      success: false,
-      message: 'Only the team owner can change team roles',
-    });
+    throw new AppError('Only the team owner can change team roles', 403);
   }
 
   return res.status(200).json({

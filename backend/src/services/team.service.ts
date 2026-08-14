@@ -227,6 +227,23 @@ export const updateTeamMemberRole = async (
     return null;
   }
 
+  const member = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        userId,
+        teamId,
+      },
+    },
+  });
+
+  if (!member) {
+    return null;
+  }
+
+  if (member.role === 'OWNER') {
+    throw new AppError('Owner role cannot be changed', 400);
+  }
+
   return prisma.teamMember.update({
     where: {
       userId_teamId: {
