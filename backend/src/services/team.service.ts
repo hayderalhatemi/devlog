@@ -71,7 +71,7 @@ export const updateTeam = async (
   });
 
   if (!membership || membership.role !== 'OWNER') {
-    return null;
+    throw new AppError('Only the team owner can update the team', 403);
   }
 
   return prisma.team.update({
@@ -91,7 +91,7 @@ export const deleteTeam = async (teamId: string, userId: string) => {
   });
 
   if (!membership || membership.role !== 'OWNER') {
-    return false;
+    throw new AppError('Only the team owner can delete the team', 403);
   }
 
   await prisma.$transaction([
@@ -122,7 +122,7 @@ export const addTeamMember = async (
   });
 
   if (!ownerMembership || ownerMembership.role !== 'OWNER') {
-    return null;
+    throw new AppError('Only the team owner can add members', 403);
   }
 
   const existingMember = await prisma.teamMember.findUnique({
@@ -162,7 +162,7 @@ export const removeTeamMember = async (
   });
 
   if (!ownerMembership || ownerMembership.role !== 'OWNER') {
-    return false;
+    throw new AppError('Only the team owner can remove members', 403);
   }
 
   await prisma.teamMember.delete({
@@ -188,7 +188,7 @@ export const getTeamMembers = async (teamId: string, userId: string) => {
   });
 
   if (!membership) {
-    return null;
+    throw new AppError('You are not a member of this team', 403);
   }
 
   return prisma.teamMember.findMany({
@@ -224,7 +224,7 @@ export const updateTeamMemberRole = async (
   });
 
   if (!ownerMembership || ownerMembership.role !== 'OWNER') {
-    return null;
+    throw new AppError('Only the team owner can update member roles', 403);
   }
 
   const member = await prisma.teamMember.findUnique({
@@ -237,7 +237,7 @@ export const updateTeamMemberRole = async (
   });
 
   if (!member) {
-    return null;
+    throw new AppError('User is not a team member', 403);
   }
 
   if (member.role === 'OWNER') {
