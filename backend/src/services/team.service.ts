@@ -256,3 +256,33 @@ export const updateTeamMemberRole = async (
     },
   });
 };
+
+export const leaveTeam = async (teamId: string, userId: string) => {
+  const member = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        userId,
+        teamId,
+      },
+    },
+  });
+
+  if (!member) {
+    throw new AppError('You are not a member of this team', 400);
+  }
+
+  if (member.role === 'OWNER') {
+    throw new AppError('The team owner cannot leave the team', 400);
+  }
+
+  await prisma.teamMember.delete({
+    where: {
+      userId_teamId: {
+        userId,
+        teamId,
+      },
+    },
+  });
+
+  return true;
+};

@@ -9,6 +9,7 @@ import {
   removeTeamMemberController,
   getTeamMembersController,
   updateTeamMemberRoleController,
+  leaveTeamController,
 } from '../controllers/team.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 
@@ -25,6 +26,7 @@ router.delete(
   authMiddleware,
   removeTeamMemberController,
 );
+router.delete('/:teamId/leave', authMiddleware, leaveTeamController);
 router.get('/:teamId/members', authMiddleware, getTeamMembersController);
 router.patch(
   '/:teamId/members/:userId/role',

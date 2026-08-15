@@ -15,6 +15,7 @@ import {
   removeTeamMember,
   getTeamMembers,
   updateTeamMemberRole,
+  leaveTeam,
 } from '../services/team.service.js';
 import { AppError } from '../utils/app-error.js';
 
@@ -254,5 +255,22 @@ export const updateTeamMemberRoleController = async (
   return res.status(200).json({
     success: true,
     data: member,
+  });
+};
+
+export const leaveTeamController = async (req: Request, res: Response) => {
+  const user = getUser(req);
+
+  const teamId = req.params.teamId;
+
+  if (typeof teamId !== 'string') {
+    throw new AppError('Invalid team id', 400);
+  }
+
+  await leaveTeam(teamId, user.userId);
+
+  return res.status(200).json({
+    success: true,
+    message: 'Left team successfully',
   });
 };
