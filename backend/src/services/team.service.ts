@@ -286,3 +286,66 @@ export const leaveTeam = async (teamId: string, userId: string) => {
 
   return true;
 };
+
+export const transferTeamOwnership = async (
+  teamId: string,
+  ownerId: string,
+  newOwnerId: string,
+) => {
+  const owner = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        userId: ownerId,
+        teamId,
+      },
+    },
+  });
+
+  if (!owner || owner.role !== 'OWNER') {
+    throw new AppError('Only the team owner can transfer ownership', 403);
+  }
+
+  const newOwner = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        userId: newOwnerId,
+        teamId,
+      },
+    },
+  });
+
+  if (!newOwner) {
+    throw new AppError('New owner must be a team member', 400);
+  }
+
+  if (ownerId === newOwnerId) {
+    throw new AppError('You are already the team owner', 400);
+  }
+
+  await prisma.$transaction([
+    prisma.teamMember.update({
+      where: {
+        userId_teamId: {
+          userId: ownerId,
+          teamId,
+        },
+      },
+      data: {
+        role: 'MEMBER',
+      },
+    }),
+    prisma.teamMember.update({
+      where: {
+        userId_teamId: {
+          userId: newOwnerId,
+          teamId,
+        },
+      },
+      data: {
+        role: 'OWNER',
+      },
+    }),
+  ]);
+
+  return true;
+};

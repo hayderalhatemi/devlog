@@ -10,6 +10,7 @@ import {
   getTeamMembersController,
   updateTeamMemberRoleController,
   leaveTeamController,
+  transferTeamOwnershipController,
 } from '../controllers/team.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 
@@ -32,6 +33,11 @@ router.patch(
   '/:teamId/members/:userId/role',
   authMiddleware,
   updateTeamMemberRoleController,
+);
+router.patch(
+  '/:teamId/owner/:userId',
+  authMiddleware,
+  transferTeamOwnershipController,
 );
 
 export default router;

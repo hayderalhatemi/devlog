@@ -16,6 +16,7 @@ import {
   getTeamMembers,
   updateTeamMemberRole,
   leaveTeam,
+  transferTeamOwnership,
 } from '../services/team.service.js';
 import { AppError } from '../utils/app-error.js';
 
@@ -272,5 +273,26 @@ export const leaveTeamController = async (req: Request, res: Response) => {
   return res.status(200).json({
     success: true,
     message: 'Left team successfully',
+  });
+};
+
+export const transferTeamOwnershipController = async (
+  req: Request,
+  res: Response,
+) => {
+  const user = getUser(req);
+
+  const teamId = req.params.teamId;
+  const newOwnerId = req.params.userId;
+
+  if (typeof teamId !== 'string' || typeof newOwnerId !== 'string') {
+    throw new AppError('Invalid team id or user id', 400);
+  }
+
+  await transferTeamOwnership(teamId, user.userId, newOwnerId);
+
+  return res.status(200).json({
+    success: true,
+    message: 'Team ownership transferred successfully',
   });
 };
