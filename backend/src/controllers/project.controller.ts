@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import { createProjectSchema } from '../schemas/project.schema.js';
-import { createProject } from '../services/project.service.js';
+import { createProject, getProjects } from '../services/project.service.js';
 import { AppError } from '../utils/app-error.js';
 
 type TeamParams = {
@@ -32,5 +32,19 @@ export const createProjectController = async (
   res.status(201).json({
     success: true,
     data: project,
+  });
+};
+
+export const getProjectsController = async (
+  req: Request<TeamParams>,
+  res: Response,
+) => {
+  const user = getUser(req);
+
+  const projects = await getProjects(req.params.teamId, user.userId);
+
+  res.status(200).json({
+    success: true,
+    data: projects,
   });
 };

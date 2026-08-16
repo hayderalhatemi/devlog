@@ -28,3 +28,27 @@ export const createProject = async (
     },
   });
 };
+
+export const getProjects = async (teamId: string, userId: string) => {
+  const membership = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        userId,
+        teamId,
+      },
+    },
+  });
+
+  if (!membership) {
+    throw new AppError('You are not a member of this team', 403);
+  }
+
+  return prisma.project.findMany({
+    where: {
+      teamId,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+};
