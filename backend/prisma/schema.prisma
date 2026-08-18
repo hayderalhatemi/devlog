@@ -23,6 +23,12 @@ enum TeamRole {
   MEMBER
 }
 
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
 model User {
   id          String       @id @default(cuid())
   name        String
@@ -64,5 +70,18 @@ model Project {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team  Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  tasks Task[]
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  projectId   String
+  createdAt   DateTime   @default(now())
+  udpatedAt   DateTime   @updatedAt
+
+  porject Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
