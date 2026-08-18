@@ -1,10 +1,19 @@
 import type { Request, Response } from 'express';
 import { createProjectSchema } from '../schemas/project.schema.js';
-import { createProject, getProjects } from '../services/project.service.js';
+import {
+  createProject,
+  getProjects,
+  getProjectById,
+} from '../services/project.service.js';
 import { AppError } from '../utils/app-error.js';
 
 type TeamParams = {
   teamId: string;
+};
+
+type ProjectParams = {
+  teamId: string;
+  projectId: string;
 };
 
 const getUser = (req: Request) => {
@@ -46,5 +55,23 @@ export const getProjectsController = async (
   res.status(200).json({
     success: true,
     data: projects,
+  });
+};
+
+export const getProjectByIdController = async (
+  req: Request<ProjectParams>,
+  res: Response,
+) => {
+  const user = getUser(req);
+
+  const project = await getProjectById(
+    req.params.teamId,
+    req.params.projectId,
+    user.userId,
+  );
+
+  res.status(200).json({
+    success: true,
+    data: project,
   });
 };
