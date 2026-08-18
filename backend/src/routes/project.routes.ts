@@ -4,6 +4,7 @@ import {
   createProjectController,
   getProjectsController,
   getProjectByIdController,
+  updateProjectController,
 } from '../controllers/project.controller.js';
 
 const router = Router();
@@ -14,6 +15,11 @@ router.get(
   '/teams/:teamId/projects/:projectId',
   authMiddleware,
   getProjectByIdController,
+);
+router.patch(
+  '/teams/:teamId/projects/:projectId',
+  authMiddleware,
+  updateProjectController,
 );
 
 export default router;

@@ -1,9 +1,13 @@
 import type { Request, Response } from 'express';
-import { createProjectSchema } from '../schemas/project.schema.js';
+import {
+  createProjectSchema,
+  updateProjectSchema,
+} from '../schemas/project.schema.js';
 import {
   createProject,
   getProjects,
   getProjectById,
+  updateProject,
 } from '../services/project.service.js';
 import { AppError } from '../utils/app-error.js';
 
@@ -68,6 +72,26 @@ export const getProjectByIdController = async (
     req.params.teamId,
     req.params.projectId,
     user.userId,
+  );
+
+  res.status(200).json({
+    success: true,
+    data: project,
+  });
+};
+
+export const updateProjectController = async (
+  req: Request<ProjectParams>,
+  res: Response,
+) => {
+  const user = getUser(req);
+  const data = updateProjectSchema.parse(req.body);
+
+  const project = await updateProject(
+    req.params.teamId,
+    req.params.projectId,
+    user.userId,
+    data,
   );
 
   res.status(200).json({
