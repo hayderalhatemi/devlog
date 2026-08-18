@@ -5,6 +5,7 @@ import {
   getProjectsController,
   getProjectByIdController,
   updateProjectController,
+  deleteProjectController,
 } from '../controllers/project.controller.js';
 
 const router = Router();
@@ -20,6 +21,11 @@ router.patch(
   '/teams/:teamId/projects/:projectId',
   authMiddleware,
   updateProjectController,
+);
+router.delete(
+  '/teams/:teamId/projects/:projectId',
+  authMiddleware,
+  deleteProjectController,
 );
 
 export default router;

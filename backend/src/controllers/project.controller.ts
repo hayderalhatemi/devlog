@@ -8,6 +8,7 @@ import {
   getProjects,
   getProjectById,
   updateProject,
+  deleteProject,
 } from '../services/project.service.js';
 import { AppError } from '../utils/app-error.js';
 
@@ -97,5 +98,19 @@ export const updateProjectController = async (
   res.status(200).json({
     success: true,
     data: project,
+  });
+};
+
+export const deleteProjectController = async (
+  req: Request<ProjectParams>,
+  res: Response,
+) => {
+  const user = getUser(req);
+
+  await deleteProject(req.params.teamId, req.params.projectId, user.userId);
+
+  res.status(200).json({
+    success: true,
+    message: 'Project deleted successfully',
   });
 };
