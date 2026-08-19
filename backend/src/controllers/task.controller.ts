@@ -1,6 +1,11 @@
 import type { Request, Response } from 'express';
 import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema.js';
-import { createTask, getTasks, updateTask } from '../services/task.service.js';
+import {
+  createTask,
+  getTasks,
+  updateTask,
+  deleteTask,
+} from '../services/task.service.js';
 import { AppError } from '../utils/app-error.js';
 
 type TaskParams = {
@@ -80,5 +85,24 @@ export const updateTaskController = async (
   res.status(200).json({
     success: true,
     data: task,
+  });
+};
+
+export const deleteTaskController = async (
+  req: Request<UpdateTaskParams>,
+  res: Response,
+) => {
+  const user = getUser(req);
+
+  await deleteTask(
+    req.params.teamId,
+    req.params.projectId,
+    req.params.taskId,
+    user.userId,
+  );
+
+  res.status(200).json({
+    success: true,
+    message: 'Task deleted successfully',
   });
 };

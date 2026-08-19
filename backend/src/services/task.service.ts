@@ -135,3 +135,53 @@ export const updateTask = async (
     data,
   });
 };
+
+export const deleteTask = async (
+  teamId: string,
+  projectId: string,
+  taskId: string,
+  userId: string,
+) => {
+  const membership = await prisma.teamMember.findUnique({
+    where: {
+      userId_teamId: {
+        userId,
+        teamId,
+      },
+    },
+  });
+
+  if (!membership) {
+    throw new AppError('You are not a member of this team', 403);
+  }
+
+  const project = await prisma.project.findFirst({
+    where: {
+      id: projectId,
+      teamId,
+    },
+  });
+
+  if (!project) {
+    throw new AppError('Project not found', 404);
+  }
+
+  const task = await prisma.task.findFirst({
+    where: {
+      id: taskId,
+      projectId,
+    },
+  });
+
+  if (!task) {
+    throw new AppError('Task not found', 404);
+  }
+
+  await prisma.task.delete({
+    where: {
+      id: taskId,
+    },
+  });
+
+  return true;
+};

@@ -3,6 +3,7 @@ import {
   createTaskController,
   getTasksController,
   updateTaskController,
+  deleteTaskController,
 } from '../controllers/task.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 
@@ -22,6 +23,12 @@ router.patch(
   '/teams/:teamId/projects/:projectId/tasks/:taskId',
   authMiddleware,
   updateTaskController,
+);
+
+router.delete(
+  '/teams/:teamId/projects/:projectId/tasks/:taskId',
+  authMiddleware,
+  deleteTaskController,
 );
 
 export default router;
