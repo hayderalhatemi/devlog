@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import { createTaskSchema } from '../schemas/task.schema.js';
-import { createTask } from '../services/task.service.js';
+import { createTask, getTasks } from '../services/task.service.js';
 import { AppError } from '../utils/app-error.js';
 
 type TaskParams = {
@@ -35,5 +35,23 @@ export const createTaskController = async (
   res.status(201).json({
     success: true,
     data: task,
+  });
+};
+
+export const getTasksController = async (
+  req: Request<TaskParams>,
+  res: Response,
+) => {
+  const user = getUser(req);
+
+  const tasks = await getTasks(
+    req.params.teamId,
+    req.params.projectId,
+    user.userId,
+  );
+
+  res.status(200).json({
+    success: true,
+    data: tasks,
   });
 };
