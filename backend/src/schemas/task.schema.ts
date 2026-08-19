@@ -5,3 +5,5 @@ export const createTaskSchema = z.object({
   description: z.string().trim().max(500).optional(),
   status: z.enum(['TODO', 'IN_PROGRESS', 'DONE']).optional(),
 });
+
+export const updateTaskSchema = createTaskSchema.partial();

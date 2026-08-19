@@ -1,11 +1,17 @@
 import type { Request, Response } from 'express';
-import { createTaskSchema } from '../schemas/task.schema.js';
-import { createTask, getTasks } from '../services/task.service.js';
+import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema.js';
+import { createTask, getTasks, updateTask } from '../services/task.service.js';
 import { AppError } from '../utils/app-error.js';
 
 type TaskParams = {
   teamId: string;
   projectId: string;
+};
+
+type UpdateTaskParams = {
+  teamId: string;
+  projectId: string;
+  taskId: string;
 };
 
 const getUser = (req: Request) => {
@@ -53,5 +59,26 @@ export const getTasksController = async (
   res.status(200).json({
     success: true,
     data: tasks,
+  });
+};
+
+export const updateTaskController = async (
+  req: Request<UpdateTaskParams>,
+  res: Response,
+) => {
+  const user = getUser(req);
+  const data = updateTaskSchema.parse(req.body);
+
+  const task = await updateTask(
+    req.params.teamId,
+    req.params.projectId,
+    req.params.taskId,
+    user.userId,
+    data,
+  );
+
+  res.status(200).json({
+    success: true,
+    data: task,
   });
 };
