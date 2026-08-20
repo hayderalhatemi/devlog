@@ -91,7 +91,7 @@ export const updateProject = async (
   userId: string,
   data: {
     name?: string;
-    descriptoin?: string;
+    description?: string;
   },
 ) => {
   const membership = await prisma.teamMember.findUnique({
