@@ -4,6 +4,7 @@ import {
   getTasksController,
   updateTaskController,
   deleteTaskController,
+  getTaskByIdController,
 } from '../controllers/task.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 
@@ -14,11 +15,19 @@ router.post(
   authMiddleware,
   createTaskController,
 );
+
 router.get(
   '/teams/:teamId/projects/:projectId/tasks',
   authMiddleware,
   getTasksController,
 );
+
+router.get(
+  '/teams/:teamId/projects/:projectId/tasks/:taskId',
+  authMiddleware,
+  getTaskByIdController,
+);
+
 router.patch(
   '/teams/:teamId/projects/:projectId/tasks/:taskId',
   authMiddleware,

@@ -3,6 +3,7 @@ import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema.js';
 import {
   createTask,
   getTasks,
+  getTaskById,
   updateTask,
   deleteTask,
 } from '../services/task.service.js';
@@ -64,6 +65,25 @@ export const getTasksController = async (
   res.status(200).json({
     success: true,
     data: tasks,
+  });
+};
+
+export const getTaskByIdController = async (
+  req: Request<UpdateTaskParams>,
+  res: Response,
+) => {
+  const user = getUser(req);
+
+  const task = await getTaskById(
+    req.params.teamId,
+    req.params.projectId,
+    req.params.taskId,
+    user.userId,
+  );
+
+  res.status(200).json({
+    success: true,
+    data: task,
   });
 };
 
