@@ -1,5 +1,10 @@
 import { Router } from 'express';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { validate } from '../middlewares/validate.middleware.js';
+import {
+  teamParamSchema,
+  projectParamSchema,
+} from '../schemas/param.schema.js';
 import {
   createProjectController,
   getProjectsController,
@@ -14,12 +19,14 @@ const router = Router();
 router.post(
   '/teams/:teamId/projects',
   authMiddleware,
+  validate(teamParamSchema),
   requireTeamRole(['OWNER', 'ADMIN']),
   createProjectController,
 );
 router.get(
   '/teams/:teamId/projects',
   authMiddleware,
+  validate(teamParamSchema),
   requireTeamRole(['OWNER', 'ADMIN', 'MEMBER']),
   getProjectsController,
 );
@@ -27,6 +34,7 @@ router.get(
 router.get(
   '/teams/:teamId/projects/:projectId',
   authMiddleware,
+  validate(projectParamSchema),
   requireTeamRole(['OWNER', 'ADMIN', 'MEMBER']),
   getProjectByIdController,
 );
@@ -34,6 +42,7 @@ router.get(
 router.patch(
   '/teams/:teamId/projects/:projectId',
   authMiddleware,
+  validate(projectParamSchema),
   requireTeamRole(['OWNER', 'ADMIN']),
   updateProjectController,
 );
@@ -41,6 +50,7 @@ router.patch(
 router.delete(
   '/teams/:teamId/projects/:projectId',
   authMiddleware,
+  validate(projectParamSchema),
   requireTeamRole(['OWNER', 'ADMIN']),
   deleteProjectController,
 );

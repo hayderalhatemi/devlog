@@ -1,4 +1,9 @@
 import { Router } from 'express';
+import { validate } from '../middlewares/validate.middleware.js';
+import {
+  projectParamSchema,
+  taskParamSchema,
+} from '../schemas/param.schema.js';
 import {
   createTaskController,
   getTasksController,
@@ -14,6 +19,7 @@ const router = Router();
 router.post(
   '/teams/:teamId/projects/:projectId/tasks',
   authMiddleware,
+  validate(projectParamSchema),
   requireTeamRole(['OWNER', 'ADMIN', 'MEMBER']),
   createTaskController,
 );
@@ -21,6 +27,7 @@ router.post(
 router.get(
   '/teams/:teamId/projects/:projectId/tasks',
   authMiddleware,
+  validate(projectParamSchema),
   requireTeamRole(['OWNER', 'ADMIN', 'MEMBER']),
   getTasksController,
 );
@@ -28,6 +35,7 @@ router.get(
 router.get(
   '/teams/:teamId/projects/:projectId/tasks/:taskId',
   authMiddleware,
+  validate(taskParamSchema),
   requireTeamRole(['OWNER', 'ADMIN', 'MEMBER']),
   getTaskByIdController,
 );
@@ -35,6 +43,7 @@ router.get(
 router.patch(
   '/teams/:teamId/projects/:projectId/tasks/:taskId',
   authMiddleware,
+  validate(taskParamSchema),
   requireTeamRole(['OWNER', 'ADMIN', 'MEMBER']),
   updateTaskController,
 );
@@ -42,6 +51,7 @@ router.patch(
 router.delete(
   '/teams/:teamId/projects/:projectId/tasks/:taskId',
   authMiddleware,
+  validate(taskParamSchema),
   requireTeamRole(['OWNER', 'ADMIN', 'MEMBER']),
   deleteTaskController,
 );
