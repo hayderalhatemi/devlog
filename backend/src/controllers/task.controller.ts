@@ -8,6 +8,7 @@ import {
   deleteTask,
 } from '../services/task.service.js';
 import { AppError } from '../utils/app-error.js';
+import { paginationQuerySchema } from '../schemas/query.schema.js';
 
 type TaskParams = {
   teamId: string;
@@ -55,16 +56,20 @@ export const getTasksController = async (
   res: Response,
 ) => {
   const user = getUser(req);
+  const { query } = paginationQuerySchema.parse({ query: req.query });
 
-  const tasks = await getTasks(
+  const result = await getTasks(
     req.params.teamId,
     req.params.projectId,
     user.userId,
+    query.page,
+    query.limit,
   );
 
   res.status(200).json({
     success: true,
-    data: tasks,
+    data: result.data,
+    meta: result.meta,
   });
 };
 

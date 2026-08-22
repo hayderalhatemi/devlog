@@ -1,5 +1,6 @@
 import { prisma } from '../config/prisma.js';
 import { AppError } from '../utils/app-error.js';
+import { formatPaginatedResponse } from '../utils/pagination.js';
 
 export const createTask = async (
   teamId: string,
@@ -47,6 +48,8 @@ export const getTasks = async (
   teamId: string,
   projectId: string,
   userId: string,
+  page: number = 1,
+  limit: number = 10,
 ) => {
   const membership = await prisma.teamMember.findUnique({
     where: {
@@ -72,14 +75,27 @@ export const getTasks = async (
     throw new AppError('Project not found', 404);
   }
 
-  return prisma.task.findMany({
-    where: {
-      projectId,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+  const skip = (page - 1) * limit;
+
+  const [tasks, totalItems] = await Promise.all([
+    prisma.task.findMany({
+      where: {
+        projectId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      skip,
+      take: limit,
+    }),
+    prisma.task.count({
+      where: {
+        projectId,
+      },
+    }),
+  ]);
+
+  return formatPaginatedResponse(tasks, totalItems, page, limit);
 };
 
 export const updateTask = async (

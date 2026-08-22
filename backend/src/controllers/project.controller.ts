@@ -11,6 +11,7 @@ import {
   deleteProject,
 } from '../services/project.service.js';
 import { AppError } from '../utils/app-error.js';
+import { paginationQuerySchema } from '../schemas/query.schema.js';
 
 type TeamParams = {
   teamId: string;
@@ -54,12 +55,19 @@ export const getProjectsController = async (
   res: Response,
 ) => {
   const user = getUser(req);
+  const { query } = paginationQuerySchema.parse({ query: req.query });
 
-  const projects = await getProjects(req.params.teamId, user.userId);
+  const result = await getProjects(
+    req.params.teamId,
+    user.userId,
+    query.page,
+    query.limit,
+  );
 
   res.status(200).json({
     success: true,
-    data: projects,
+    data: result.data,
+    meta: result.meta,
   });
 };
 
