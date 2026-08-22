@@ -8,7 +8,7 @@ import {
   deleteTask,
 } from '../services/task.service.js';
 import { AppError } from '../utils/app-error.js';
-import { paginationQuerySchema } from '../schemas/query.schema.js';
+import { taskQuerySchema } from '../schemas/query.schema.js';
 
 type TaskParams = {
   teamId: string;
@@ -56,7 +56,7 @@ export const getTasksController = async (
   res: Response,
 ) => {
   const user = getUser(req);
-  const { query } = paginationQuerySchema.parse({ query: req.query });
+  const { query } = taskQuerySchema.parse({ query: req.query });
 
   const result = await getTasks(
     req.params.teamId,
@@ -64,6 +64,9 @@ export const getTasksController = async (
     user.userId,
     query.page,
     query.limit,
+    query.status,
+    query.sortBy,
+    query.sortOrder,
   );
 
   res.status(200).json({

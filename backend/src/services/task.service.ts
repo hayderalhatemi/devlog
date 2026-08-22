@@ -50,6 +50,9 @@ export const getTasks = async (
   userId: string,
   page: number = 1,
   limit: number = 10,
+  status?: 'TODO' | 'IN_PROGRESS' | 'DONE',
+  sortBy: 'createdAt' | 'updatedAt' | 'title' | 'status' = 'createdAt',
+  sortOrder: 'asc' | 'desc' = 'desc',
 ) => {
   const membership = await prisma.teamMember.findUnique({
     where: {
@@ -76,23 +79,21 @@ export const getTasks = async (
   }
 
   const skip = (page - 1) * limit;
+  const where = {
+    projectId,
+    ...(status && { status }),
+  };
 
   const [tasks, totalItems] = await Promise.all([
     prisma.task.findMany({
-      where: {
-        projectId,
-      },
+      where,
       orderBy: {
-        createdAt: 'desc',
+        [sortBy]: sortOrder,
       },
       skip,
       take: limit,
     }),
-    prisma.task.count({
-      where: {
-        projectId,
-      },
-    }),
+    prisma.task.count({ where }),
   ]);
 
   return formatPaginatedResponse(tasks, totalItems, page, limit);
@@ -235,7 +236,7 @@ export const getTaskById = async (
   const task = await prisma.task.findFirst({
     where: {
       id: taskId,
-      project,
+      projectId,
     },
   });
 
