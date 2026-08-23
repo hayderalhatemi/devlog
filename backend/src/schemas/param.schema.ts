@@ -21,6 +21,7 @@ export const taskParamSchema = z.object({
   }),
 });
 
+export type TeamParams = z.infer<typeof teamParamSchema>['params'];
 export type TeamParamInput = z.infer<typeof teamParamSchema>;
 export type ProjectParamInput = z.infer<typeof projectParamSchema>;
 export type TaskParamInput = z.infer<typeof taskParamSchema>;
