@@ -53,6 +53,7 @@ export const getTasks = async (
   status?: 'TODO' | 'IN_PROGRESS' | 'DONE',
   sortBy: 'createdAt' | 'updatedAt' | 'title' | 'status' = 'createdAt',
   sortOrder: 'asc' | 'desc' = 'desc',
+  search?: string,
 ) => {
   const membership = await prisma.teamMember.findUnique({
     where: {
@@ -82,6 +83,12 @@ export const getTasks = async (
   const where = {
     projectId,
     ...(status && { status }),
+    ...(search && {
+      OR: [
+        { title: { contains: search, mode: 'insensitive' as const } },
+        { description: { contains: search, mode: 'insensitive' as const } },
+      ],
+    }),
   };
 
   const [tasks, totalItems] = await Promise.all([

@@ -67,6 +67,7 @@ export const getTasksController = async (
     query.status,
     query.sortBy,
     query.sortOrder,
+    query.search,
   );
 
   res.status(200).json({

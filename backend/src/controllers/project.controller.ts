@@ -62,6 +62,7 @@ export const getProjectsController = async (
     user.userId,
     query.page,
     query.limit,
+    query.search,
   );
 
   res.status(200).json({

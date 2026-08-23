@@ -35,6 +35,7 @@ export const getProjects = async (
   userId: string,
   page: number = 1,
   limit: number = 10,
+  search?: string,
 ) => {
   const membership = await prisma.teamMember.findUnique({
     where: {
@@ -51,11 +52,19 @@ export const getProjects = async (
 
   const skip = (page - 1) * limit;
 
+  const where = {
+    teamId,
+    ...(search && {
+      OR: [
+        { name: { contains: search, mode: 'insensitive' as const } },
+        { description: { contains: search, mode: 'insensitive' as const } },
+      ],
+    }),
+  };
+
   const [projects, totalItems] = await Promise.all([
     prisma.project.findMany({
-      where: {
-        teamId,
-      },
+      where,
       orderBy: {
         createdAt: 'desc',
       },
@@ -63,9 +72,7 @@ export const getProjects = async (
       take: limit,
     }),
     prisma.project.count({
-      where: {
-        teamId,
-      },
+      where,
     }),
   ]);
 

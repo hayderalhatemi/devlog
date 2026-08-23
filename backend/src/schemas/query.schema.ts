@@ -18,6 +18,7 @@ export const paginationQuerySchema = z.object({
           .positive('Limit must be greater than 0')
           .max(100, 'Limit cannot exceed 100'),
       ),
+    search: z.string().optional(),
   }),
 });
 
@@ -39,6 +40,7 @@ export const taskQuerySchema = z.object({
           .positive('Limit must be greater than 0')
           .max(100, 'Limit cannot exceed 100'),
       ),
+    search: z.string().optional(),
     status: z.enum(['TODO', 'IN_PROGRESS', 'DONE']).optional(),
     sortBy: z
       .enum(['createdAt', 'updatedAt', 'title', 'status'])
