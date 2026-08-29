@@ -9,6 +9,7 @@ export const createTask = async (
   title: string,
   description?: string,
   status?: 'TODO' | 'IN_PROGRESS' | 'DONE',
+  assigneeId?: string | null,
 ) => {
   const membership = await prisma.teamMember.findUnique({
     where: {
@@ -34,12 +35,28 @@ export const createTask = async (
     throw new AppError('Project not found', 404);
   }
 
+  if (assigneeId) {
+    const assigneeMembership = await prisma.teamMember.findUnique({
+      where: {
+        userId_teamId: {
+          userId: assigneeId,
+          teamId,
+        },
+      },
+    });
+
+    if (!assigneeMembership) {
+      throw new AppError('Assignee is not a member of this team', 400);
+    }
+  }
+
   return prisma.task.create({
     data: {
       projectId,
       title,
       description,
       status,
+      assigneeId,
     },
   });
 };
@@ -115,6 +132,7 @@ export const updateTask = async (
     title?: string;
     description?: string;
     status?: 'TODO' | 'IN_PROGRESS' | 'DONE';
+    assigneeId?: string | null;
   },
 ) => {
   const membership = await prisma.teamMember.findUnique({
@@ -150,6 +168,21 @@ export const updateTask = async (
 
   if (!task) {
     throw new AppError('Task not found', 404);
+  }
+
+  if (data.assigneeId) {
+    const assigneeMembership = await prisma.teamMember.findUnique({
+      where: {
+        userId_teamId: {
+          userId: data.assigneeId,
+          teamId,
+        },
+      },
+    });
+
+    if (!assigneeMembership) {
+      throw new AppError('Assignee is not a member of this team', 400);
+    }
   }
 
   return prisma.task.update({

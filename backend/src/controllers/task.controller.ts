@@ -43,6 +43,7 @@ export const createTaskController = async (
     data.title,
     data.description,
     data.status,
+    data.assigneeId,
   );
 
   res.status(201).json({
