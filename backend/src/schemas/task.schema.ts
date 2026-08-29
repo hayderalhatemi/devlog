@@ -5,6 +5,8 @@ export const createTaskSchema = z.object({
   description: z.string().trim().max(500).optional(),
   status: z.enum(['TODO', 'IN_PROGRESS', 'DONE']).optional(),
   assigneeId: z.string().nullable().optional(),
+  dueDate: z.string().datetime().nullable().optional(),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH']).optional(),
 });
 
 export const updateTaskSchema = createTaskSchema.partial();

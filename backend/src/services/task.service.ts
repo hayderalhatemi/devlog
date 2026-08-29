@@ -10,6 +10,8 @@ export const createTask = async (
   description?: string,
   status?: 'TODO' | 'IN_PROGRESS' | 'DONE',
   assigneeId?: string | null,
+  dueDate?: string | null,
+  priority?: 'LOW' | 'MEDIUM' | 'HIGH',
 ) => {
   const membership = await prisma.teamMember.findUnique({
     where: {
@@ -57,6 +59,8 @@ export const createTask = async (
       description,
       status,
       assigneeId,
+      dueDate: dueDate ? new Date(dueDate) : undefined,
+      priority,
     },
   });
 };
@@ -133,6 +137,8 @@ export const updateTask = async (
     description?: string;
     status?: 'TODO' | 'IN_PROGRESS' | 'DONE';
     assigneeId?: string | null;
+    dueDate?: string | null;
+    priority?: 'LOW' | 'MEDIUM' | 'HIGH';
   },
 ) => {
   const membership = await prisma.teamMember.findUnique({
@@ -189,7 +195,15 @@ export const updateTask = async (
     where: {
       id: taskId,
     },
-    data,
+    data: {
+      ...data,
+      dueDate:
+        data.dueDate === null
+          ? null
+          : data.dueDate
+            ? new Date(data.dueDate)
+            : undefined,
+    },
   });
 };
 
