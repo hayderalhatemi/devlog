@@ -52,7 +52,7 @@ router.delete(
   '/teams/:teamId/projects/:projectId/tasks/:taskId',
   authMiddleware,
   validate(taskParamSchema),
-  requireTeamRole(['OWNER', 'ADMIN', 'MEMBER']),
+  requireTeamRole(['OWNER', 'ADMIN']),
   deleteTaskController,
 );
 
