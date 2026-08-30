@@ -6,6 +6,8 @@ import teamRoutes from './routes/team.routes.js';
 import projectRoutes from './routes/project.routes.js';
 import taskRoutes from './routes/task.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger.js';
 
 const app = express();
 
@@ -29,6 +31,8 @@ app.use('/api', projectRoutes);
 app.use('/api', taskRoutes);
 
 app.use('/api/teams', dashboardRoutes);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(errorHandler);
 
