@@ -14,7 +14,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
-      JWT_SECRET: test-secret-key
+      JWT_SECRET: test-secret-key-for-ci-1234567890
 
     steps:
       - name: Checkout repository
