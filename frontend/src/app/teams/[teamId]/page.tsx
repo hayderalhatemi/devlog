@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 
 type Project = {
   id: string;
@@ -15,10 +15,10 @@ export default function TeamPage() {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     if (!token) {
-      router.replace('/login');
+      router.replace("/login");
       return;
     }
 
@@ -41,7 +41,7 @@ export default function TeamPage() {
   return (
     <main className="p-8">
       <button
-        onClick={() => router.push('/dashboard')}
+        onClick={() => router.push("/dashboard")}
         className="mb-6 cursor-pointer"
       >
         ← Back

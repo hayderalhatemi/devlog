@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Team = {
   id: string;
@@ -13,10 +13,10 @@ export default function DashboardPage() {
   const [teams, setTeams] = useState<Team[]>([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     if (!token) {
-      router.replace('/login');
+      router.replace("/login");
       return;
     }
 
