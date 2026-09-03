@@ -42,7 +42,11 @@ export default function DashboardPage() {
 
       <div className="mt-4 space-y-3">
         {teams.map((team) => (
-          <div key={team.id} className="rounded-md border p-4">
+          <div
+            key={team.id}
+            onClick={() => router.push(`/teams/${team.id}`)}
+            className="cursor-pointer rounded-md border p-4 hover:bg-gray-50"
+          >
             {team.name}
           </div>
         ))}
