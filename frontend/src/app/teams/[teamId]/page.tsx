@@ -51,7 +51,13 @@ export default function TeamPage() {
 
       <div className="mt-6 space-y-3">
         {projects.map((project) => (
-          <div key={project.id} className="rounded-md border p-4">
+          <div
+            key={project.id}
+            onClick={() =>
+              router.push(`/teams/${params.teamId}/projects/${project.id}`)
+            }
+            className="cursor-pointer rounded-md border p-4 hover:bg-gray-50"
+          >
             <h2 className="font-semibold">{project.name}</h2>
 
             {project.description && (
