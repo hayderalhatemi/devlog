@@ -53,8 +53,16 @@ export default function ProjectPage() {
 
       <div className="mt-6 space-y-3">
         {tasks.map((task) => (
-          <div key={task.id} className="rounded-md border p-4">
-            <h2 className="font-semibold">{task.title}</h2>
+          <div
+            key={task.id}
+            onClick={() =>
+              router.push(
+                `/teams/${params.teamId}/projects/${params.projectId}/tasks/${task.id}`,
+              )
+            }
+            className="cursor-pointer rouned-md border p-4 hover:bg-gray-50"
+          >
+            <h2 className="font-semiblod">{task.title}</h2>
 
             <div className="mt-2 flex gap-4 text-sm text-gray-600">
               <span>{task.status}</span>
