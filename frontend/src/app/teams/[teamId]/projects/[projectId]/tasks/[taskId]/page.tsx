@@ -75,6 +75,17 @@ export default function TaskPage() {
           <p>Due date: {new Date(task.dueDate).toLocaleDateString()}</p>
         )}
       </div>
+
+      <button
+        onClick={() =>
+          router.push(
+            `/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}/edit`,
+          )
+        }
+        className="mt-6 cursor-pointer rounded-md bg-black px-4 py-2 text-white"
+      >
+        Edit Task
+      </button>
     </main>
   );
 }
