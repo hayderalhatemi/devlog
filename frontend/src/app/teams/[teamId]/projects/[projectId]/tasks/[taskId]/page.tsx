@@ -46,6 +46,39 @@ export default function TaskPage() {
       });
   }, [params.teamId, params.projectId, params.taskId, router]);
 
+  async function handleDelete() {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this task?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      router.push(`/teams/${params.teamId}/projects/${params.projectId}`);
+    }
+  }
+
   if (!task) {
     return <main className="p-8">Loading...</main>;
   }
@@ -85,6 +118,13 @@ export default function TaskPage() {
         className="mt-6 cursor-pointer rounded-md bg-black px-4 py-2 text-white"
       >
         Edit Task
+      </button>
+
+      <button
+        onClick={handleDelete}
+        className="ml-3 cursor-pointer rounded-md bg-red-600 px-4 py-2 text-white"
+      >
+        Delete Task
       </button>
     </main>
   );
