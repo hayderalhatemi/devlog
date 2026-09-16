@@ -10,6 +10,7 @@ export default function NewTaskPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("MEDIUM");
+  const [dueDate, setDueDate] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -33,6 +34,7 @@ export default function NewTaskPage() {
           title,
           description,
           priority,
+          dueDate: dueDate ? new Date(dueDate).toISOString() : null,
         }),
       },
     );
@@ -74,6 +76,13 @@ export default function NewTaskPage() {
           <option value="MEDIUM">Medium</option>
           <option value="HIGH">High</option>
         </select>
+
+        <input
+          type="date"
+          value={dueDate}
+          onChange={(event) => setDueDate(event.target.value)}
+          className="w-full rounded-md border p-2"
+        />
 
         <button
           type="submit"

@@ -15,6 +15,7 @@ export default function EditTaskPage() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("TODO");
   const [priority, setPriority] = useState("MEDIUM");
+  const [dueDate, setDueDate] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -39,6 +40,7 @@ export default function EditTaskPage() {
           setDescription(data.data.description ?? "");
           setStatus(data.data.status);
           setPriority(data.data.priority);
+          setDueDate(data.data.dueDate ? data.data.dueDate.slice(0, 10) : "");
         }
       });
   }, [params.teamId, params.projectId, params.taskId, router]);
@@ -66,6 +68,7 @@ export default function EditTaskPage() {
           description,
           status,
           priority,
+          dueDate: dueDate ? new Date(dueDate).toISOString() : null,
         }),
       },
     );
@@ -116,6 +119,13 @@ export default function EditTaskPage() {
           <option value="MEDIUM">Medium</option>
           <option value="HIGH">High</option>
         </select>
+
+        <input
+          type="date"
+          value={dueDate}
+          onChange={(event) => setDueDate(event.target.value)}
+          className="w-full rounded-md border p-2"
+        />
 
         <button
           type="submit"
