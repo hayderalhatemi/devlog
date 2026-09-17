@@ -62,6 +62,17 @@ export default function ProjectPage() {
         New Task
       </button>
 
+      <button
+        onClick={() =>
+          router.push(
+            `/teams/${params.teamId}/projects/${params.projectId}/edit`,
+          )
+        }
+        className="mt-4 ml-3 cursor-pointer rounded-md border px-4 py-2"
+      >
+        Edit Project
+      </button>
+
       <div className="mt-6 space-y-3">
         {tasks.map((task) => (
           <div
