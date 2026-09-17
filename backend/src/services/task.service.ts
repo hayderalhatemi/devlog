@@ -292,6 +292,15 @@ export const getTaskById = async (
       id: taskId,
       projectId,
     },
+    include: {
+      assignee: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
   });
 
   if (!task) {

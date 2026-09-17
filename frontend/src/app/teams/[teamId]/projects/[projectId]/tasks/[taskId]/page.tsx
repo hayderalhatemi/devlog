@@ -10,6 +10,11 @@ type Task = {
   status: "TODO" | "IN_PROGRESS" | "DONE";
   priority: "LOW" | "MEDIUM" | "HIGH";
   dueDate: string | null;
+  assignee: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
 };
 
 export default function TaskPage() {
@@ -103,6 +108,8 @@ export default function TaskPage() {
       <div className="mt-6 space-y-2">
         <p>Status: {task.status}</p>
         <p>Priority: {task.priority}</p>
+
+        <p>Assignee: {task.assignee ? task.assignee.name : "Unassigned"}</p>
 
         {task.dueDate && (
           <p>Due date: {new Date(task.dueDate).toLocaleDateString()}</p>

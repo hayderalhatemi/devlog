@@ -1,7 +1,15 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+
+type Member = {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+};
 
 export default function NewTaskPage() {
   const router = useRouter();
@@ -11,6 +19,32 @@ export default function NewTaskPage() {
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("MEDIUM");
   const [dueDate, setDueDate] = useState("");
+  const [members, setMembers] = useState<Member[]>([]);
+  const [assigneeId, setAssigneeId] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setMembers(data.data);
+        }
+      });
+  }, [params.teamId, router]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,6 +69,7 @@ export default function NewTaskPage() {
           description,
           priority,
           dueDate: dueDate ? new Date(dueDate).toISOString() : null,
+          assigneeId: assigneeId || null,
         }),
       },
     );
@@ -83,6 +118,20 @@ export default function NewTaskPage() {
           onChange={(event) => setDueDate(event.target.value)}
           className="w-full rounded-md border p-2"
         />
+
+        <select
+          value={assigneeId}
+          onChange={(event) => setAssigneeId(event.target.value)}
+          className="w-full rounded-md border p-2"
+        >
+          <option value="">Unassigned</option>
+
+          {members.map((member) => (
+            <option key={member.user.id} value={member.user.id}>
+              {member.user.name} ({member.user.email})
+            </option>
+          ))}
+        </select>
 
         <button
           type="submit"
