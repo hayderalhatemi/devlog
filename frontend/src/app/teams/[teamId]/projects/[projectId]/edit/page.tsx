@@ -67,6 +67,39 @@ export default function EditProjectPage() {
     }
   }
 
+  async function handleDelete() {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this project?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      router.push(`/teams/${params.teamId}`);
+    }
+  }
+
   return (
     <main className="p-8">
       <h1 className="text-3xl font-bold">Edit Project</h1>
@@ -92,6 +125,13 @@ export default function EditProjectPage() {
           Save Changes
         </button>
       </form>
+
+      <button
+        onClick={handleDelete}
+        className="mt-4 cursor-pointer rounded-md bg-red-600 px-4 py-2 text-white"
+      >
+        Delete Project
+      </button>
     </main>
   );
 }
