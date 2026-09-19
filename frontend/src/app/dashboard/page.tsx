@@ -40,6 +40,13 @@ export default function DashboardPage() {
 
       <h2 className="mt-8 text-xl font-semibold">Your teams</h2>
 
+      <button
+        onClick={() => router.push("/teams/new")}
+        className="mt-4 cursor-pointer rounded-md bg-black px-4 py-2 text-white"
+      >
+        New Team
+      </button>
+
       <div className="mt-4 space-y-3">
         {teams.map((team) => (
           <div
