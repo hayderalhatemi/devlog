@@ -143,6 +143,39 @@ export default function MembersPage() {
     }
   }
 
+  async function handleTransferOwnership(userId: string) {
+    const confirmed = window.confirm(
+      "Are you sure you want to transfer team ownership?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/owner/${userId}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      window.location.reload();
+    }
+  }
+
   return (
     <main className="p-8">
       <button
@@ -200,6 +233,13 @@ export default function MembersPage() {
                   className="cursor-pointer rounded-md bg-red-600 px-4 py-2 text-white"
                 >
                   Remove
+                </button>
+
+                <button
+                  onClick={() => handleTransferOwnership(member.user.id)}
+                  className="cursor-pointer rounded-md border px-4 py-2"
+                >
+                  Transfer Ownership
                 </button>
               </div>
             )}
