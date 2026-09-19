@@ -108,6 +108,41 @@ export default function MembersPage() {
     }
   }
 
+  async function handleRemoveMember(userId: string) {
+    const confirmed = window.confirm(
+      "Are you sure you want to remove this member?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members/${userId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      setMembers((currentMembers) =>
+        currentMembers.filter((member) => member.user.id !== userId),
+      );
+    }
+  }
+
   return (
     <main className="p-8">
       <button
@@ -145,19 +180,28 @@ export default function MembersPage() {
             {member.role === "OWNER" ? (
               <p className="mt-1 text-sm">OWNER</p>
             ) : (
-              <select
-                value={member.role}
-                onChange={(event) =>
-                  handleRoleChange(
-                    member.user.id,
-                    event.target.value as "ADMIN" | "MEMBER",
-                  )
-                }
-                className="mt-2 rounded-md border p-2"
-              >
-                <option value="MEMBER">MEMBER</option>
-                <option value="ADMIN">ADMIN</option>
-              </select>
+              <div className="mt-2 flex gap-3">
+                <select
+                  value={member.role}
+                  onChange={(event) =>
+                    handleRoleChange(
+                      member.user.id,
+                      event.target.value as "ADMIN" | "MEMBER",
+                    )
+                  }
+                  className="rounded-md border p-2"
+                >
+                  <option value="MEMBER">MEMBER</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
+
+                <button
+                  onClick={() => handleRemoveMember(member.user.id)}
+                  className="cursor-pointer rounded-md bg-red-600 px-4 py-2 text-white"
+                >
+                  Remove
+                </button>
+              </div>
             )}
           </div>
         ))}
