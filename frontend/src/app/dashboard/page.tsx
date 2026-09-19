@@ -33,10 +33,22 @@ export default function DashboardPage() {
       });
   }, [router]);
 
+  function handleLogout() {
+    localStorage.removeItem("token");
+    router.replace("/login");
+  }
+
   return (
     <main className="p-8">
       <h1 className="text-3xl font-bold">Dashboard</h1>
       <p className="mt-2 text-gray-600">Welcome to DevLog.</p>
+
+      <button
+        onClick={handleLogout}
+        className="mt-4 cursor-pointer rounded-md border px-4 py-2"
+      >
+        Logout
+      </button>
 
       <h2 className="mt-8 text-xl font-semibold">Your teams</h2>
 

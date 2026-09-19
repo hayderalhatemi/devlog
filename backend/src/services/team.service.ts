@@ -110,7 +110,7 @@ export const deleteTeam = async (teamId: string, userId: string) => {
 export const addTeamMember = async (
   teamId: string,
   ownerId: string,
-  userId: string,
+  email: string,
 ) => {
   const ownerMembership = await prisma.teamMember.findUnique({
     where: {
@@ -124,6 +124,18 @@ export const addTeamMember = async (
   if (!ownerMembership || ownerMembership.role !== 'OWNER') {
     throw new AppError('Only the team owner can add members', 403);
   }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  const userId = user.id;
 
   const existingMember = await prisma.teamMember.findUnique({
     where: {

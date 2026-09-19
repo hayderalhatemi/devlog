@@ -151,7 +151,7 @@ export const addTeamMemberController = async (req: Request, res: Response) => {
 
   const data = addTeamMemberSchema.parse(req.body);
 
-  const member = await addTeamMember(teamId, user.userId, data.userId);
+  const member = await addTeamMember(teamId, user.userId, data.email);
 
   if (!member) {
     return res.status(403).json({

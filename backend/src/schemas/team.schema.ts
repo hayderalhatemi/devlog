@@ -9,7 +9,7 @@ export const updateTeamSchema = z.object({
 });
 
 export const addTeamMemberSchema = z.object({
-  userId: z.string().trim().min(1),
+  email: z.string().trim().email(),
 });
 
 export const updateTeamMemberRoleSchema = z.object({

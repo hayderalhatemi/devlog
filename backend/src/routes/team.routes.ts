@@ -141,10 +141,11 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [userId]
+ *             required: [email]
  *             properties:
- *               userId:
+ *               email:
  *                 type: string
+ *                 format: email
  *     responses:
  *       200:
  *         description: Member added successfully

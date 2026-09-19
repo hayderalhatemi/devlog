@@ -63,6 +63,13 @@ export default function TeamPage() {
         >
           Edit Team
         </button>
+
+        <button
+          onClick={() => router.push(`/teams/${params.teamId}/members`)}
+          className="cursor-pointer rounded-md border px-4 py-2"
+        >
+          Members
+        </button>
       </div>
 
       <div className="mt-6 space-y-3">

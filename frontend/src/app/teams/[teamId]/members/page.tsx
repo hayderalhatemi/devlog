@@ -1,0 +1,118 @@
+"use client";
+
+import { FormEvent, useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+
+type Member = {
+  id: string;
+  role: "OWNER" | "ADMIN" | "MEMBER";
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+};
+
+export default function MembersPage() {
+  const router = useRouter();
+  const params = useParams<{ teamId: string }>();
+  const [members, setMembers] = useState<Member[]>([]);
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setMembers(data.data);
+        }
+      });
+  }, [params.teamId, router]);
+
+  async function handleAddMember(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          email,
+        }),
+      },
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      setMembers((currentMembers) => [...currentMembers, data.data]);
+      setEmail("");
+    }
+  }
+
+  return (
+    <main className="p-8">
+      <button
+        onClick={() => router.push(`/teams/${params.teamId}`)}
+        className="mb-6 cursor-pointer"
+      >
+        ← Back
+      </button>
+
+      <h1 className="text-3xl font-bold">Team Members</h1>
+
+      <form onSubmit={handleAddMember} className="mt-6 flex max-w-md gap-3">
+        <input
+          type="email"
+          placeholder="Member email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          required
+          className="flex-1 rounded-md border p-2"
+        />
+
+        <button
+          type="submit"
+          className="cursor-pointer rounded-md bg-black px-4 py-2 text-white"
+        >
+          Add Member
+        </button>
+      </form>
+
+      <div className="mt-6 space-y-3">
+        {members.map((member) => (
+          <div key={member.id} className="rounded-md border p-4">
+            <p className="font-semibold">{member.user.name}</p>
+            <p className="text-gray-600">{member.user.email}</p>
+            <p className="mt-1 text-sm">{member.role}</p>
+          </div>
+        ))}
+      </div>
+    </main>
+  );
+}
