@@ -75,6 +75,39 @@ export default function MembersPage() {
     }
   }
 
+  async function handleRoleChange(userId: string, role: "ADMIN" | "MEMBER") {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members/${userId}/role`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          role,
+        }),
+      },
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      setMembers((currentMembers) =>
+        currentMembers.map((member) =>
+          member.user.id === userId ? { ...member, role } : member,
+        ),
+      );
+    }
+  }
+
   return (
     <main className="p-8">
       <button
@@ -109,7 +142,23 @@ export default function MembersPage() {
           <div key={member.id} className="rounded-md border p-4">
             <p className="font-semibold">{member.user.name}</p>
             <p className="text-gray-600">{member.user.email}</p>
-            <p className="mt-1 text-sm">{member.role}</p>
+            {member.role === "OWNER" ? (
+              <p className="mt-1 text-sm">OWNER</p>
+            ) : (
+              <select
+                value={member.role}
+                onChange={(event) =>
+                  handleRoleChange(
+                    member.user.id,
+                    event.target.value as "ADMIN" | "MEMBER",
+                  )
+                }
+                className="mt-2 rounded-md border p-2"
+              >
+                <option value="MEMBER">MEMBER</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            )}
           </div>
         ))}
       </div>
