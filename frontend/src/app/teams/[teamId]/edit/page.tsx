@@ -8,6 +8,8 @@ export default function EditTeamPage() {
   const params = useParams<{ teamId: string }>();
 
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -26,12 +28,22 @@ export default function EditTeamPage() {
       .then((data) => {
         if (data.success) {
           setName(data.data.name);
+        } else {
+          setError(data.message || "Failed to load team");
         }
+      })
+      .catch(() => {
+        setError("Failed to load team");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [params.teamId, router]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    setError("");
 
     const token = localStorage.getItem("token");
 
@@ -40,24 +52,30 @@ export default function EditTeamPage() {
       return;
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name,
+          }),
         },
-        body: JSON.stringify({
-          name,
-        }),
-      },
-    );
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      router.push("/dashboard");
+      if (data.success) {
+        router.push("/dashboard");
+      } else {
+        setError(data.message || "Failed to update team");
+      }
+    } catch {
+      setError("Failed to update team");
     }
   }
 
@@ -70,6 +88,8 @@ export default function EditTeamPage() {
       return;
     }
 
+    setError("");
+
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -77,21 +97,31 @@ export default function EditTeamPage() {
       return;
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      },
-    );
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      router.push("/dashboard");
+      if (data.success) {
+        router.push("/dashboard");
+      } else {
+        setError(data.message || "Failed to delete team");
+      }
+    } catch {
+      setError("Failed to delete team");
     }
+  }
+
+  if (loading) {
+    return <main className="p-8">Loading...</main>;
   }
 
   return (
@@ -106,6 +136,8 @@ export default function EditTeamPage() {
           required
           className="w-full rounded-md border p-2"
         />
+
+        {error && <p className="text-red-600">{error}</p>}
 
         <button
           type="submit"
