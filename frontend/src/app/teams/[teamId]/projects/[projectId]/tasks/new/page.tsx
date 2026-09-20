@@ -21,6 +21,7 @@ export default function NewTaskPage() {
   const [dueDate, setDueDate] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
   const [assigneeId, setAssigneeId] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -42,12 +43,19 @@ export default function NewTaskPage() {
       .then((data) => {
         if (data.success) {
           setMembers(data.data);
+        } else {
+          setError(data.message || "Failed to load team members");
         }
+      })
+      .catch(() => {
+        setError("Failed to load team members");
       });
   }, [params.teamId, router]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    setError("");
 
     const token = localStorage.getItem("token");
 
@@ -56,28 +64,34 @@ export default function NewTaskPage() {
       return;
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title,
+            description,
+            priority,
+            dueDate: dueDate ? new Date(dueDate).toISOString() : null,
+            assigneeId: assigneeId || null,
+          }),
         },
-        body: JSON.stringify({
-          title,
-          description,
-          priority,
-          dueDate: dueDate ? new Date(dueDate).toISOString() : null,
-          assigneeId: assigneeId || null,
-        }),
-      },
-    );
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      router.push(`/teams/${params.teamId}/projects/${params.projectId}`);
+      if (data.success) {
+        router.push(`/teams/${params.teamId}/projects/${params.projectId}`);
+      } else {
+        setError(data.message || "Failed to create task");
+      }
+    } catch {
+      setError("Failed to create task");
     }
   }
 
@@ -132,6 +146,8 @@ export default function NewTaskPage() {
             </option>
           ))}
         </select>
+
+        {error && <p className="text-red-600">{error}</p>}
 
         <button
           type="submit"
