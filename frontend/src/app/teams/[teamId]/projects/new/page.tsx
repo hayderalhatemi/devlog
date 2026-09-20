@@ -9,9 +9,12 @@ export default function NewProjectPage() {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [error, setError] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    setError("");
 
     const token = localStorage.getItem("token");
 
@@ -20,25 +23,31 @@ export default function NewProjectPage() {
       return;
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name,
+            description,
+          }),
         },
-        body: JSON.stringify({
-          name,
-          description,
-        }),
-      },
-    );
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      router.push(`/teams/${params.teamId}`);
+      if (data.success) {
+        router.push(`/teams/${params.teamId}`);
+      } else {
+        setError(data.message || "Failed to create project");
+      }
+    } catch {
+      setError("Failed to create project");
     }
   }
 
@@ -62,6 +71,8 @@ export default function NewProjectPage() {
           onChange={(event) => setDescription(event.target.value)}
           className="w-full rounded-md border p-2"
         />
+
+        {error && <p className="text-red-600">{error}</p>}
 
         <button
           type="submit"
