@@ -38,6 +38,39 @@ export default function TeamPage() {
       });
   }, [params.teamId, router]);
 
+  async function handleLeaveTeam() {
+    const confirmed = window.confirm(
+      "Are you sure you want to leave this team?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/leave`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      router.push("/dashboard");
+    }
+  }
+
   return (
     <main className="p-8">
       <button
@@ -69,6 +102,13 @@ export default function TeamPage() {
           className="cursor-pointer rounded-md border px-4 py-2"
         >
           Members
+        </button>
+
+        <button
+          onClick={handleLeaveTeam}
+          className="cursor-pointer rounded-md border px-4 py-2"
+        >
+          Leave Team
         </button>
       </div>
 
