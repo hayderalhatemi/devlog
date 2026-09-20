@@ -11,6 +11,7 @@ type Team = {
 export default function DashboardPage() {
   const router = useRouter();
   const [teams, setTeams] = useState<Team[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -30,12 +31,18 @@ export default function DashboardPage() {
         if (data.success) {
           setTeams(data.data);
         }
+
+        setLoading(false);
       });
   }, [router]);
 
   function handleLogout() {
     localStorage.removeItem("token");
     router.replace("/login");
+  }
+
+  if (loading) {
+    return <p className="p-8">Loading...</p>;
   }
 
   return (
