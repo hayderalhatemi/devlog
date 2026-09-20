@@ -13,11 +13,16 @@ type Member = {
   };
 };
 
+type JwtPayload = {
+  userId: string;
+};
+
 export default function MembersPage() {
   const router = useRouter();
   const params = useParams<{ teamId: string }>();
   const [members, setMembers] = useState<Member[]>([]);
   const [email, setEmail] = useState("");
+  const [currentRole, setCurrentRole] = useState<Member["role"] | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -26,6 +31,7 @@ export default function MembersPage() {
       router.replace("/login");
       return;
     }
+    const payload = JSON.parse(atob(token.split(".")[1])) as JwtPayload;
 
     fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
@@ -39,9 +45,17 @@ export default function MembersPage() {
       .then((data) => {
         if (data.success) {
           setMembers(data.data);
+
+          const currentMember = data.data.find(
+            (member: Member) => member.user.id === payload.userId,
+          );
+
+          setCurrentRole(currentMember?.role ?? null);
         }
       });
   }, [params.teamId, router]);
+
+  const isOwner = currentRole === "OWNER";
 
   async function handleAddMember(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -187,31 +201,33 @@ export default function MembersPage() {
 
       <h1 className="text-3xl font-bold">Team Members</h1>
 
-      <form onSubmit={handleAddMember} className="mt-6 flex max-w-md gap-3">
-        <input
-          type="email"
-          placeholder="Member email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          required
-          className="flex-1 rounded-md border p-2"
-        />
+      {isOwner && (
+        <form onSubmit={handleAddMember} className="mt-6 flex max-w-md gap-3">
+          <input
+            type="email"
+            placeholder="Member email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            required
+            className="flex-1 rounded-md border p-2"
+          />
 
-        <button
-          type="submit"
-          className="cursor-pointer rounded-md bg-black px-4 py-2 text-white"
-        >
-          Add Member
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="cursor-pointer rounded-md bg-black px-4 py-2 text-white"
+          >
+            Add Member
+          </button>
+        </form>
+      )}
 
       <div className="mt-6 space-y-3">
         {members.map((member) => (
           <div key={member.id} className="rounded-md border p-4">
             <p className="font-semibold">{member.user.name}</p>
             <p className="text-gray-600">{member.user.email}</p>
-            {member.role === "OWNER" ? (
-              <p className="mt-1 text-sm">OWNER</p>
+            {member.role === "OWNER" || !isOwner ? (
+              <p className="mt-1 text-sm">{member.role}</p>
             ) : (
               <div className="mt-2 flex gap-3">
                 <select
