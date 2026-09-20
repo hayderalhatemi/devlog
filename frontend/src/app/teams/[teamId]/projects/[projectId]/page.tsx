@@ -16,6 +16,7 @@ export default function ProjectPage() {
   const params = useParams<{ teamId: string; projectId: string }>();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -37,8 +38,14 @@ export default function ProjectPage() {
       .then((data) => {
         if (data.success) {
           setTasks(data.data);
+        } else {
+          setError(data.message || "Failed to load tasks");
         }
-
+      })
+      .catch(() => {
+        setError("Failed to load tasks");
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, [params.projectId, params.teamId, router]);
@@ -80,8 +87,12 @@ export default function ProjectPage() {
         Edit Project
       </button>
 
+      {error && <p className="mt-4 text-red-600">{error}</p>}
+
       <div className="mt-6 space-y-3">
-        {tasks.length === 0 && <p className="text-gray-600">No tasks yet.</p>}
+        {!error && tasks.length === 0 && (
+          <p className="text-gray-600">No tasks yet.</p>
+        )}
 
         {tasks.map((task) => (
           <div
