@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -30,8 +31,14 @@ export default function DashboardPage() {
       .then((data) => {
         if (data.success) {
           setTeams(data.data);
+        } else {
+          setError(data.message || "Failed to load teams");
         }
 
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to load teams");
         setLoading(false);
       });
   }, [router]);
@@ -66,8 +73,12 @@ export default function DashboardPage() {
         New Team
       </button>
 
+      {error && <p className="mt-4 text-red-600">{error}</p>}
+
       <div className="mt-4 space-y-3">
-        {teams.length === 0 && <p className="text-gray-600">No teams yet.</p>}
+        {!error && teams.length === 0 && (
+          <p className="text-gray-600">No teams yet.</p>
+        )}
 
         {teams.map((team) => (
           <div
