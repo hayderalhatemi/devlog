@@ -28,6 +28,7 @@ export default function TeamPage() {
   const params = useParams<{ teamId: string }>();
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentRole, setCurrentRole] = useState<Member["role"] | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -85,6 +86,8 @@ export default function TeamPage() {
       return;
     }
 
+    setError("");
+
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -106,6 +109,8 @@ export default function TeamPage() {
 
     if (data.success) {
       router.push("/dashboard");
+    } else {
+      setError(data.message || "Failed to leave team");
     }
   }
 
@@ -153,6 +158,8 @@ export default function TeamPage() {
           </button>
         )}
       </div>
+
+      {error && <p className="mt-2 text-red-600">{error}</p>}
 
       <div className="mt-6 space-y-3">
         {projects.map((project) => (
