@@ -23,6 +23,7 @@ export default function MembersPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [email, setEmail] = useState("");
   const [currentRole, setCurrentRole] = useState<Member["role"] | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -31,6 +32,7 @@ export default function MembersPage() {
       router.replace("/login");
       return;
     }
+
     const payload = JSON.parse(atob(token.split(".")[1])) as JwtPayload;
 
     fetch(
@@ -60,6 +62,8 @@ export default function MembersPage() {
   async function handleAddMember(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    setError("");
+
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -86,11 +90,15 @@ export default function MembersPage() {
     if (data.success) {
       setMembers((currentMembers) => [...currentMembers, data.data]);
       setEmail("");
+    } else {
+      setError(data.message || "Failed to add member");
     }
   }
 
   async function handleRoleChange(userId: string, role: "ADMIN" | "MEMBER") {
     const token = localStorage.getItem("token");
+
+    setError("");
 
     if (!token) {
       router.replace("/login");
@@ -119,6 +127,8 @@ export default function MembersPage() {
           member.user.id === userId ? { ...member, role } : member,
         ),
       );
+    } else {
+      setError(data.message || "Failed to update member role");
     }
   }
 
@@ -126,6 +136,8 @@ export default function MembersPage() {
     const confirmed = window.confirm(
       "Are you sure you want to remove this member?",
     );
+
+    setError("");
 
     if (!confirmed) {
       return;
@@ -154,6 +166,8 @@ export default function MembersPage() {
       setMembers((currentMembers) =>
         currentMembers.filter((member) => member.user.id !== userId),
       );
+    } else {
+      setError(data.message || "Failed to remove member");
     }
   }
 
@@ -165,6 +179,8 @@ export default function MembersPage() {
     if (!confirmed) {
       return;
     }
+
+    setError("");
 
     const token = localStorage.getItem("token");
 
@@ -187,6 +203,8 @@ export default function MembersPage() {
 
     if (data.success) {
       window.location.reload();
+    } else {
+      setError(data.message || "Failed to transfer ownership");
     }
   }
 
@@ -221,11 +239,14 @@ export default function MembersPage() {
         </form>
       )}
 
+      {error && <p className="mt-2 text-red-600">{error}</p>}
+
       <div className="mt-6 space-y-3">
         {members.map((member) => (
           <div key={member.id} className="rounded-md border p-4">
             <p className="font-semibold">{member.user.name}</p>
             <p className="text-gray-600">{member.user.email}</p>
+
             {member.role === "OWNER" || !isOwner ? (
               <p className="mt-1 text-sm">{member.role}</p>
             ) : (
