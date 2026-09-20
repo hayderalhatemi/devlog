@@ -24,8 +24,10 @@ export default function EditTaskPage() {
   const [status, setStatus] = useState("TODO");
   const [priority, setPriority] = useState("MEDIUM");
   const [dueDate, setDueDate] = useState("");
-  const [members, setMemebers] = useState<Member[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [assigneeId, setAssigneeId] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -35,54 +37,58 @@ export default function EditTaskPage() {
       return;
     }
 
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    Promise.all([
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      },
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          setTitle(data.data.title);
-          setDescription(data.data.description ?? "");
-          setStatus(data.data.status);
-          setPriority(data.data.priority);
-          setDueDate(data.data.dueDate ? data.data.dueDate.slice(0, 10) : "");
-          setAssigneeId(data.data.assigneeId ?? "");
+      ).then((response) => response.json()),
+
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      ).then((response) => response.json()),
+    ])
+      .then(([taskData, membersData]) => {
+        if (taskData.success) {
+          setTitle(taskData.data.title);
+          setDescription(taskData.data.description ?? "");
+          setStatus(taskData.data.status);
+          setPriority(taskData.data.priority);
+          setDueDate(
+            taskData.data.dueDate ? taskData.data.dueDate.slice(0, 10) : "",
+          );
+          setAssigneeId(taskData.data.assigneeId ?? "");
+        } else {
+          setError(taskData.message || "Failed to load task");
         }
+
+        if (membersData.success) {
+          setMembers(membersData.data);
+        } else {
+          setError(membersData.message || "Failed to load team members");
+        }
+      })
+      .catch(() => {
+        setError("Failed to load task");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [params.teamId, params.projectId, params.taskId, router]);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      router.replace("/login");
-      return;
-    }
-
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          setMemebers(data.data);
-        }
-      });
-  }, [params.teamId, router]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    setError("");
+
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -90,32 +96,42 @@ export default function EditTaskPage() {
       return;
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title,
+            description,
+            status,
+            priority,
+            dueDate: dueDate ? new Date(dueDate).toISOString() : null,
+            assigneeId: assigneeId || null,
+          }),
         },
-        body: JSON.stringify({
-          title,
-          description,
-          status,
-          priority,
-          dueDate: dueDate ? new Date(dueDate).toISOString() : null,
-          assigneeId: assigneeId || null,
-        }),
-      },
-    );
-
-    const data = await response.json();
-
-    if (data.success) {
-      router.push(
-        `/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
       );
+
+      const data = await response.json();
+
+      if (data.success) {
+        router.push(
+          `/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
+        );
+      } else {
+        setError(data.message || "Failed to update task");
+      }
+    } catch {
+      setError("Failed to update task");
     }
+  }
+
+  if (loading) {
+    return <main className="p-8">Loading...</main>;
   }
 
   return (
@@ -176,6 +192,8 @@ export default function EditTaskPage() {
             </option>
           ))}
         </select>
+
+        {error && <p className="text-red-600">{error}</p>}
 
         <button
           type="submit"
