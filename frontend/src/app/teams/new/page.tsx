@@ -6,9 +6,12 @@ import { useRouter } from "next/navigation";
 export default function NewTeamPage() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [error, setError] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    setError("");
 
     const token = localStorage.getItem("token");
 
@@ -17,24 +20,30 @@ export default function NewTeamPage() {
       return;
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name,
+          }),
         },
-        body: JSON.stringify({
-          name,
-        }),
-      },
-    );
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      router.push("/dashboard");
+      if (data.success) {
+        router.push("/dashboard");
+      } else {
+        setError(data.message || "Failed to create team");
+      }
+    } catch {
+      setError("Failed to create team");
     }
   }
 
@@ -51,6 +60,8 @@ export default function NewTeamPage() {
           required
           className="w-full rounded-md border p-2"
         />
+
+        {error && <p className="text-red-600">{error}</p>}
 
         <button
           type="submit"
