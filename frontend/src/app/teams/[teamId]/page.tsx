@@ -41,39 +41,47 @@ export default function TeamPage() {
 
     const payload = JSON.parse(atob(token.split(".")[1])) as JwtPayload;
 
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    Promise.all([
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      },
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          setProjects(data.data);
-        }
-      });
+      ).then((response) => response.json()),
 
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      },
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          const currentMember = data.data.find(
+      ).then((response) => response.json()),
+    ])
+      .then(([projectsData, membersData]) => {
+        if (projectsData.success) {
+          setProjects(projectsData.data);
+        } else {
+          setError(projectsData.message || "Failed to load projects");
+        }
+
+        if (membersData.success) {
+          const currentMember = membersData.data.find(
             (member: Member) => member.user.id === payload.userId,
           );
 
           setCurrentRole(currentMember?.role ?? null);
-          setLoading(false);
+        } else {
+          setError(membersData.message || "Failed to load team members");
         }
+      })
+      .catch(() => {
+        setError("Failed to load team");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [params.teamId, router]);
 
@@ -168,7 +176,7 @@ export default function TeamPage() {
       {error && <p className="mt-2 text-red-600">{error}</p>}
 
       <div className="mt-6 space-y-3">
-        {projects.length === 0 && (
+        {!error && projects.length === 0 && (
           <p className="text-gray-600">No projects yet.</p>
         )}
 
