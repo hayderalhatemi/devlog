@@ -54,8 +54,15 @@ export default function MembersPage() {
           );
 
           setCurrentRole(currentMember?.role ?? null);
-          setLoading(false);
+        } else {
+          setError(data.message || "Failed to load team members");
         }
+      })
+      .catch(() => {
+        setError("Failed to load team members");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [params.teamId, router]);
 
@@ -73,64 +80,72 @@ export default function MembersPage() {
       return;
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            email,
+          }),
         },
-        body: JSON.stringify({
-          email,
-        }),
-      },
-    );
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      setMembers((currentMembers) => [...currentMembers, data.data]);
-      setEmail("");
-    } else {
-      setError(data.message || "Failed to add member");
+      if (data.success) {
+        setMembers((currentMembers) => [...currentMembers, data.data]);
+        setEmail("");
+      } else {
+        setError(data.message || "Failed to add member");
+      }
+    } catch {
+      setError("Failed to add member");
     }
   }
 
   async function handleRoleChange(userId: string, role: "ADMIN" | "MEMBER") {
-    const token = localStorage.getItem("token");
-
     setError("");
+
+    const token = localStorage.getItem("token");
 
     if (!token) {
       router.replace("/login");
       return;
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members/${userId}/role`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members/${userId}/role`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            role,
+          }),
         },
-        body: JSON.stringify({
-          role,
-        }),
-      },
-    );
-
-    const data = await response.json();
-
-    if (data.success) {
-      setMembers((currentMembers) =>
-        currentMembers.map((member) =>
-          member.user.id === userId ? { ...member, role } : member,
-        ),
       );
-    } else {
-      setError(data.message || "Failed to update member role");
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMembers((currentMembers) =>
+          currentMembers.map((member) =>
+            member.user.id === userId ? { ...member, role } : member,
+          ),
+        );
+      } else {
+        setError(data.message || "Failed to update member role");
+      }
+    } catch {
+      setError("Failed to update member role");
     }
   }
 
@@ -139,11 +154,11 @@ export default function MembersPage() {
       "Are you sure you want to remove this member?",
     );
 
-    setError("");
-
     if (!confirmed) {
       return;
     }
+
+    setError("");
 
     const token = localStorage.getItem("token");
 
@@ -152,24 +167,28 @@ export default function MembersPage() {
       return;
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members/${userId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      },
-    );
-
-    const data = await response.json();
-
-    if (data.success) {
-      setMembers((currentMembers) =>
-        currentMembers.filter((member) => member.user.id !== userId),
       );
-    } else {
-      setError(data.message || "Failed to remove member");
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMembers((currentMembers) =>
+          currentMembers.filter((member) => member.user.id !== userId),
+        );
+      } else {
+        setError(data.message || "Failed to remove member");
+      }
+    } catch {
+      setError("Failed to remove member");
     }
   }
 
@@ -191,22 +210,26 @@ export default function MembersPage() {
       return;
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/owner/${userId}`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/owner/${userId}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      },
-    );
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      window.location.reload();
-    } else {
-      setError(data.message || "Failed to transfer ownership");
+      if (data.success) {
+        window.location.reload();
+      } else {
+        setError(data.message || "Failed to transfer ownership");
+      }
+    } catch {
+      setError("Failed to transfer ownership");
     }
   }
 

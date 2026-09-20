@@ -156,6 +156,15 @@ export const addTeamMember = async (
       userId,
       role: 'MEMBER',
     },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
   });
 };
 
