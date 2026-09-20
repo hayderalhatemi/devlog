@@ -24,6 +24,7 @@ export default function MembersPage() {
   const [email, setEmail] = useState("");
   const [currentRole, setCurrentRole] = useState<Member["role"] | null>(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -53,6 +54,7 @@ export default function MembersPage() {
           );
 
           setCurrentRole(currentMember?.role ?? null);
+          setLoading(false);
         }
       });
   }, [params.teamId, router]);
@@ -206,6 +208,10 @@ export default function MembersPage() {
     } else {
       setError(data.message || "Failed to transfer ownership");
     }
+  }
+
+  if (loading) {
+    return <p className="p-8">Loading...</p>;
   }
 
   return (

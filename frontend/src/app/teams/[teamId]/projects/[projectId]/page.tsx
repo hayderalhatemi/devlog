@@ -15,6 +15,7 @@ export default function ProjectPage() {
   const router = useRouter();
   const params = useParams<{ teamId: string; projectId: string }>();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -37,8 +38,14 @@ export default function ProjectPage() {
         if (data.success) {
           setTasks(data.data);
         }
+
+        setLoading(false);
       });
   }, [params.projectId, params.teamId, router]);
+
+  if (loading) {
+    return <p className="p-8">Loading...</p>;
+  }
 
   return (
     <main className="p-8">

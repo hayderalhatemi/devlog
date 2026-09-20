@@ -29,6 +29,7 @@ export default function TeamPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentRole, setCurrentRole] = useState<Member["role"] | null>(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -71,6 +72,7 @@ export default function TeamPage() {
           );
 
           setCurrentRole(currentMember?.role ?? null);
+          setLoading(false);
         }
       });
   }, [params.teamId, router]);
@@ -112,6 +114,10 @@ export default function TeamPage() {
     } else {
       setError(data.message || "Failed to leave team");
     }
+  }
+
+  if (loading) {
+    return <p className="p-8">Loading...</p>;
   }
 
   return (
