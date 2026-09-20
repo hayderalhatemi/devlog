@@ -168,6 +168,10 @@ export default function TeamPage() {
       {error && <p className="mt-2 text-red-600">{error}</p>}
 
       <div className="mt-6 space-y-3">
+        {projects.length === 0 && (
+          <p className="text-gray-600">No projects yet.</p>
+        )}
+
         {projects.map((project) => (
           <div
             key={project.id}

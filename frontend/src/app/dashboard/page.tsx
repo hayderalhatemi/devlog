@@ -60,6 +60,8 @@ export default function DashboardPage() {
       </button>
 
       <div className="mt-4 space-y-3">
+        {teams.length === 0 && <p className="text-gray-600">No teams yet.</p>}
+
         {teams.map((team) => (
           <div
             key={team.id}

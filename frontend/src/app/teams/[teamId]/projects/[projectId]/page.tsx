@@ -81,6 +81,8 @@ export default function ProjectPage() {
       </button>
 
       <div className="mt-6 space-y-3">
+        {tasks.length === 0 && <p className="text-gray-600">No tasks yet.</p>}
+
         {tasks.map((task) => (
           <div
             key={task.id}
