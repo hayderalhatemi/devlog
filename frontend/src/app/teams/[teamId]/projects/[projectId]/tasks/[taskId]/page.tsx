@@ -26,6 +26,8 @@ export default function TaskPage() {
   }>();
 
   const [task, setTask] = useState<Task | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -47,7 +49,15 @@ export default function TaskPage() {
       .then((data) => {
         if (data.success) {
           setTask(data.data);
+        } else {
+          setError(data.message || "Failed to load task");
         }
+      })
+      .catch(() => {
+        setError("Failed to load task");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [params.teamId, params.projectId, params.taskId, router]);
 
@@ -60,6 +70,8 @@ export default function TaskPage() {
       return;
     }
 
+    setError("");
+
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -67,25 +79,39 @@ export default function TaskPage() {
       return;
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      },
-    );
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      router.push(`/teams/${params.teamId}/projects/${params.projectId}`);
+      if (data.success) {
+        router.push(`/teams/${params.teamId}/projects/${params.projectId}`);
+      } else {
+        setError(data.message || "Failed to delete task");
+      }
+    } catch {
+      setError("Failed to delete task");
     }
   }
 
-  if (!task) {
+  if (loading) {
     return <main className="p-8">Loading...</main>;
+  }
+
+  if (!task) {
+    return (
+      <main className="p-8">
+        <p className="text-red-600">{error || "Task not found"}</p>
+      </main>
+    );
   }
 
   return (
@@ -108,13 +134,14 @@ export default function TaskPage() {
       <div className="mt-6 space-y-2">
         <p>Status: {task.status}</p>
         <p>Priority: {task.priority}</p>
-
         <p>Assignee: {task.assignee ? task.assignee.name : "Unassigned"}</p>
 
         {task.dueDate && (
           <p>Due date: {new Date(task.dueDate).toLocaleDateString()}</p>
         )}
       </div>
+
+      {error && <p className="mt-4 text-red-600">{error}</p>}
 
       <button
         onClick={() =>
