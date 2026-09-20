@@ -9,10 +9,25 @@ type Project = {
   description: string | null;
 };
 
+type Member = {
+  id: string;
+  role: "OWNER" | "ADMIN" | "MEMBER";
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+};
+
+type JwtPayload = {
+  userId: string;
+};
+
 export default function TeamPage() {
   const router = useRouter();
   const params = useParams<{ teamId: string }>();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [currentRole, setCurrentRole] = useState<Member["role"] | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -21,6 +36,8 @@ export default function TeamPage() {
       router.replace("/login");
       return;
     }
+
+    const payload = JSON.parse(atob(token.split(".")[1])) as JwtPayload;
 
     fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects`,
@@ -36,7 +53,28 @@ export default function TeamPage() {
           setProjects(data.data);
         }
       });
+
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          const currentMember = data.data.find(
+            (member: Member) => member.user.id === payload.userId,
+          );
+
+          setCurrentRole(currentMember?.role ?? null);
+        }
+      });
   }, [params.teamId, router]);
+
+  const isOwner = currentRole === "OWNER";
 
   async function handleLeaveTeam() {
     const confirmed = window.confirm(
@@ -90,12 +128,14 @@ export default function TeamPage() {
           New Project
         </button>
 
-        <button
-          onClick={() => router.push(`/teams/${params.teamId}/edit`)}
-          className="cursor-pointer rounded-md border px-4 py-2"
-        >
-          Edit Team
-        </button>
+        {isOwner && (
+          <button
+            onClick={() => router.push(`/teams/${params.teamId}/edit`)}
+            className="cursor-pointer rounded-md border px-4 py-2"
+          >
+            Edit Team
+          </button>
+        )}
 
         <button
           onClick={() => router.push(`/teams/${params.teamId}/members`)}
@@ -104,12 +144,14 @@ export default function TeamPage() {
           Members
         </button>
 
-        <button
-          onClick={handleLeaveTeam}
-          className="cursor-pointer rounded-md border px-4 py-2"
-        >
-          Leave Team
-        </button>
+        {currentRole && !isOwner && (
+          <button
+            onClick={handleLeaveTeam}
+            className="cursor-pointer rounded-md border px-4 py-2"
+          >
+            Leave Team
+          </button>
+        )}
       </div>
 
       <div className="mt-6 space-y-3">
