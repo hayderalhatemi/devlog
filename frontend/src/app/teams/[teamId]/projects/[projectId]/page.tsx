@@ -149,92 +149,94 @@ export default function ProjectPage() {
 
       <h2 className="mt-4 text-xl font-semibold">Tasks</h2>
 
-      <button
-        onClick={() =>
-          router.push(
-            `/teams/${params.teamId}/projects/${params.projectId}/tasks/new`,
-          )
-        }
-        className="mt-4 cursor-pointer rounded-md bg-black px-4 py-2 text-white"
-      >
-        New Task
-      </button>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <button
+          onClick={() =>
+            router.push(
+              `/teams/${params.teamId}/projects/${params.projectId}/tasks/new`,
+            )
+          }
+          className="cursor-pointer rounded-md bg-black px-4 py-2 text-white"
+        >
+          New Task
+        </button>
 
-      <button
-        onClick={() =>
-          router.push(
-            `/teams/${params.teamId}/projects/${params.projectId}/edit`,
-          )
-        }
-        className="mt-4 ml-3 cursor-pointer rounded-md border px-4 py-2"
-      >
-        Edit Project
-      </button>
+        <button
+          onClick={() =>
+            router.push(
+              `/teams/${params.teamId}/projects/${params.projectId}/edit`,
+            )
+          }
+          className="cursor-pointer rounded-md border px-4 py-2"
+        >
+          Edit Project
+        </button>
 
-      <select
-        value={statusFilter}
-        onChange={(event) =>
-          setStatusFilter(
-            event.target.value as "ALL" | "TODO" | "IN_PROGRESS" | "DONE",
-          )
-        }
-        className="mt-4 ml-3 rounded-md border px-3 py-2"
-      >
-        <option value="ALL">All Tasks</option>
-        <option value="TODO">To Do</option>
-        <option value="IN_PROGRESS">In Progress</option>
-        <option value="DONE">Done</option>
-      </select>
+        <select
+          value={statusFilter}
+          onChange={(event) =>
+            setStatusFilter(
+              event.target.value as "ALL" | "TODO" | "IN_PROGRESS" | "DONE",
+            )
+          }
+          className="rounded-md border px-3 py-2"
+        >
+          <option value="ALL">All Tasks</option>
+          <option value="TODO">To Do</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="DONE">Done</option>
+        </select>
 
-      <select
-        value={priorityFilter}
-        onChange={(event) =>
-          setPriorityFilter(
-            event.target.value as "ALL" | "LOW" | "MEDIUM" | "HIGH",
-          )
-        }
-        className="mt-4 ml-3 rounded-md border px-3 py-2"
-      >
-        <option value="ALL">All Priorities</option>
-        <option value="LOW">Low</option>
-        <option value="MEDIUM">Medium</option>
-        <option value="HIGH">High</option>
-      </select>
+        <select
+          value={priorityFilter}
+          onChange={(event) =>
+            setPriorityFilter(
+              event.target.value as "ALL" | "LOW" | "MEDIUM" | "HIGH",
+            )
+          }
+          className="rounded-md border px-3 py-2"
+        >
+          <option value="ALL">All Priorities</option>
+          <option value="LOW">Low</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="HIGH">High</option>
+        </select>
 
-      <select
-        value={assigneeFilter}
-        onChange={(event) => setAssigneeFilter(event.target.value)}
-        className="mt-4 ml-3 rounded-md border px-3 py-2"
-      >
-        <option value="ALL">All Assignees</option>
-        <option value="UNASSIGNED">Unassigned</option>
+        <select
+          value={assigneeFilter}
+          onChange={(event) => setAssigneeFilter(event.target.value)}
+          className="rounded-md border px-3 py-2"
+        >
+          <option value="ALL">All Assignees</option>
+          <option value="UNASSIGNED">Unassigned</option>
 
-        {assignees.map((assignee) => (
-          <option key={assignee.id} value={assignee.id}>
-            {assignee.name}
-          </option>
-        ))}
-      </select>
+          {assignees.map((assignee) => (
+            <option key={assignee.id} value={assignee.id}>
+              {assignee.name}
+            </option>
+          ))}
+        </select>
 
-      <select
-        value={sortBy}
-        onChange={(event) =>
-          setSortBy(event.target.value as "NEWEST" | "DUE_DATE" | "PRIORITY")
-        }
-        className="mt-4 ml-3 rounded-md border px-3 py-2"
-      >
-        <option value="NEWEST">Newest</option>
-        <option value="DUE_DATE">Due Date</option>
-        <option value="PRIORITY">Priority</option>
-      </select>
+        <select
+          value={sortBy}
+          onChange={(event) =>
+            setSortBy(event.target.value as "NEWEST" | "DUE_DATE" | "PRIORITY")
+          }
+          className="rounded-md border px-3 py-2"
+        >
+          <option value="NEWEST">Newest</option>
+          <option value="DUE_DATE">Due Date</option>
+          <option value="PRIORITY">Priority</option>
+        </select>
 
-      <input
-        type="text"
-        placeholder="Search tasks..."
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        className="mt-4 ml-3 rounded-md border px-3 py-2"
-      />
+        <input
+          type="text"
+          placeholder="Search tasks..."
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          className="rounded-md border px-3 py-2"
+        />
+      </div>
 
       {error && <p className="mt-4 text-red-600">{error}</p>}
 
