@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
 
 type Member = {
   user: {
@@ -38,22 +39,12 @@ export default function EditTaskPage() {
     }
 
     Promise.all([
-      fetch(
+      apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
       ).then((response) => response.json()),
 
-      fetch(
+      apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
       ).then((response) => response.json()),
     ])
       .then(([taskData, membersData]) => {
@@ -97,13 +88,12 @@ export default function EditTaskPage() {
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             title,

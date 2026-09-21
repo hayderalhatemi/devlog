@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
 
 export default function EditProjectPage() {
   const router = useRouter();
@@ -20,13 +21,8 @@ export default function EditProjectPage() {
       return;
     }
 
-    fetch(
+    apiFetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
     )
       .then((response) => response.json())
       .then((data) => {
@@ -58,13 +54,12 @@ export default function EditProjectPage() {
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             name,
@@ -104,13 +99,10 @@ export default function EditProjectPage() {
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         },
       );
 

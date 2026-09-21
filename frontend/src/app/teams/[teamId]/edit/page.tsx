@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
 
 export default function EditTeamPage() {
   const router = useRouter();
@@ -19,11 +20,7 @@ export default function EditTeamPage() {
       return;
     }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
@@ -53,13 +50,12 @@ export default function EditTeamPage() {
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             name,
@@ -98,13 +94,10 @@ export default function EditTeamPage() {
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         },
       );
 

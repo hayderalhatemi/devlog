@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
 
 type Team = {
   id: string;
@@ -22,11 +23,7 @@ export default function DashboardPage() {
       return;
     }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/teams`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/teams`)
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {

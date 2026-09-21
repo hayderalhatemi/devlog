@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
 
 type Task = {
   id: string;
@@ -37,13 +38,8 @@ export default function TaskPage() {
       return;
     }
 
-    fetch(
+    apiFetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
     )
       .then((response) => response.json())
       .then((data) => {
@@ -80,13 +76,10 @@ export default function TaskPage() {
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         },
       );
 

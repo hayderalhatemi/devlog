@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
 
 type Member = {
   id: string;
@@ -34,15 +35,18 @@ export default function MembersPage() {
       return;
     }
 
-    const payload = JSON.parse(atob(token.split(".")[1])) as JwtPayload;
+    let payload: JwtPayload;
 
-    fetch(
+    try {
+      payload = JSON.parse(atob(token.split(".")[1])) as JwtPayload;
+    } catch {
+      localStorage.removeItem("token");
+      router.replace("/login");
+      return;
+    }
+
+    apiFetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
     )
       .then((response) => response.json())
       .then((data) => {
@@ -81,13 +85,12 @@ export default function MembersPage() {
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             email,
@@ -119,13 +122,12 @@ export default function MembersPage() {
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members/${userId}/role`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             role,
@@ -168,13 +170,10 @@ export default function MembersPage() {
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members/${userId}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         },
       );
 
@@ -211,13 +210,10 @@ export default function MembersPage() {
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/owner/${userId}`,
         {
           method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         },
       );
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
 
 type Project = {
   id: string;
@@ -39,25 +40,23 @@ export default function TeamPage() {
       return;
     }
 
-    const payload = JSON.parse(atob(token.split(".")[1])) as JwtPayload;
+    let payload: JwtPayload;
+
+    try {
+      payload = JSON.parse(atob(token.split(".")[1])) as JwtPayload;
+    } catch {
+      localStorage.removeItem("token");
+      router.replace("/login");
+      return;
+    }
 
     Promise.all([
-      fetch(
+      apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
       ).then((response) => response.json()),
 
-      fetch(
+      apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
       ).then((response) => response.json()),
     ])
       .then(([projectsData, membersData]) => {
@@ -105,13 +104,10 @@ export default function TeamPage() {
       return;
     }
 
-    const response = await fetch(
+    const response = await apiFetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/leave`,
       {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       },
     );
 
