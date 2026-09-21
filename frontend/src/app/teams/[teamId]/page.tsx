@@ -27,7 +27,9 @@ type JwtPayload = {
 export default function TeamPage() {
   const router = useRouter();
   const params = useParams<{ teamId: string }>();
+
   const [projects, setProjects] = useState<Project[]>([]);
+  const [teamName, setTeamName] = useState("");
   const [currentRole, setCurrentRole] = useState<Member["role"] | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -52,6 +54,10 @@ export default function TeamPage() {
 
     Promise.all([
       apiFetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}`,
+      ).then((response) => response.json()),
+
+      apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects`,
       ).then((response) => response.json()),
 
@@ -59,7 +65,13 @@ export default function TeamPage() {
         `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/members`,
       ).then((response) => response.json()),
     ])
-      .then(([projectsData, membersData]) => {
+      .then(([teamData, projectsData, membersData]) => {
+        if (teamData.success) {
+          setTeamName(teamData.data.name);
+        } else {
+          setError(teamData.message || "Failed to load team");
+        }
+
         if (projectsData.success) {
           setProjects(projectsData.data);
         } else {
@@ -133,7 +145,8 @@ export default function TeamPage() {
         ← Back
       </button>
 
-      <h1 className="text-3xl font-bold">Projects</h1>
+      <h1 className="text-3xl font-bold">{teamName}</h1>
+      <p className="mt-1 text-gray-600">Projects</p>
 
       <div className="mt-4 flex gap-3">
         <button
