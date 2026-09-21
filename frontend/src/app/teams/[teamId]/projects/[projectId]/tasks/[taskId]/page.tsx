@@ -136,23 +136,25 @@ export default function TaskPage() {
 
       {error && <p className="mt-4 text-red-600">{error}</p>}
 
-      <button
-        onClick={() =>
-          router.push(
-            `/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}/edit`,
-          )
-        }
-        className="mt-6 cursor-pointer rounded-md bg-black px-4 py-2 text-white"
-      >
-        Edit Task
-      </button>
+      <div className="mt-6 flex flex-wrap gap-3">
+        <button
+          onClick={() =>
+            router.push(
+              `/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}/edit`,
+            )
+          }
+          className="cursor-pointer rounded-md bg-black px-4 py-2 text-white"
+        >
+          Edit Task
+        </button>
 
-      <button
-        onClick={handleDelete}
-        className="ml-3 cursor-pointer rounded-md bg-red-600 px-4 py-2 text-white"
-      >
-        Delete Task
-      </button>
+        <button
+          onClick={handleDelete}
+          className="cursor-pointer rounded-md bg-red-600 px-4 py-2 text-white"
+        >
+          Delete Task
+        </button>
+      </div>
     </main>
   );
 }
