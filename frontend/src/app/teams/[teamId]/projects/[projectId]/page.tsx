@@ -16,6 +16,9 @@ export default function ProjectPage() {
   const router = useRouter();
   const params = useParams<{ teamId: string; projectId: string }>();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [statusFilter, setStatusFilter] = useState<
+    "ALL" | "TODO" | "IN_PROGRESS" | "DONE"
+  >("ALL");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -45,6 +48,11 @@ export default function ProjectPage() {
         setLoading(false);
       });
   }, [params.projectId, params.teamId, router]);
+
+  const filteredTasks =
+    statusFilter === "ALL"
+      ? tasks
+      : tasks.filter((task) => task.status === statusFilter);
 
   if (loading) {
     return <p className="p-8">Loading...</p>;
@@ -83,6 +91,21 @@ export default function ProjectPage() {
         Edit Project
       </button>
 
+      <select
+        value={statusFilter}
+        onChange={(event) =>
+          setStatusFilter(
+            event.target.value as "ALL" | "TODO" | "IN_PROGRESS" | "DONE",
+          )
+        }
+        className="mt-4 ml-3 rounded-md border px-3 py-2"
+      >
+        <option value="ALL">All Tasks</option>
+        <option value="TODO">To Do</option>
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="DONE">Done</option>
+      </select>
+
       {error && <p className="mt-4 text-red-600">{error}</p>}
 
       <div className="mt-6 space-y-3">
@@ -90,7 +113,11 @@ export default function ProjectPage() {
           <p className="text-gray-600">No tasks yet.</p>
         )}
 
-        {tasks.map((task) => (
+        {!error && tasks.length > 0 && filteredTasks.length === 0 && (
+          <p className="text-gray-600">No tasks match this filter.</p>
+        )}
+
+        {filteredTasks.map((task) => (
           <div
             key={task.id}
             onClick={() =>
