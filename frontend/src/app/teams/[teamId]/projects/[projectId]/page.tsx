@@ -16,6 +16,7 @@ export default function ProjectPage() {
   const router = useRouter();
   const params = useParams<{ teamId: string; projectId: string }>();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [projectName, setProjectName] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "ALL" | "TODO" | "IN_PROGRESS" | "DONE"
   >("ALL");
@@ -37,19 +38,30 @@ export default function ProjectPage() {
       return;
     }
 
-    apiFetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks`,
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          setTasks(data.data);
+    Promise.all([
+      apiFetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}`,
+      ).then((response) => response.json()),
+
+      apiFetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks`,
+      ).then((response) => response.json()),
+    ])
+      .then(([projectData, tasksData]) => {
+        if (projectData.success) {
+          setProjectName(projectData.data.name);
         } else {
-          setError(data.message || "Failed to load tasks");
+          setError(projectData.message || "Failed to load project");
+        }
+
+        if (tasksData.success) {
+          setTasks(tasksData.data);
+        } else {
+          setError(tasksData.message || "Failed to load tasks");
         }
       })
       .catch(() => {
-        setError("Failed to load tasks");
+        setError("Failed to load project");
       })
       .finally(() => {
         setLoading(false);
@@ -104,7 +116,8 @@ export default function ProjectPage() {
         ← Back
       </button>
 
-      <h1 className="text-3xl font-bold">Tasks</h1>
+      <h1 className="text-3xl font-bold">{projectName}</h1>
+      <p className="mt-1 text-gray-600">Tasks</p>
 
       <button
         onClick={() =>
