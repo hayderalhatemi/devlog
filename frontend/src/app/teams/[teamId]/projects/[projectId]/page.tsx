@@ -22,6 +22,9 @@ export default function ProjectPage() {
   const [priorityFilter, setPriorityFilter] = useState<
     "ALL" | "LOW" | "MEDIUM" | "HIGH"
   >("ALL");
+  const [sortBy, setSortBy] = useState<"NEWEST" | "DUE_DATE" | "PRIORITY">(
+    "NEWEST",
+  );
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -53,19 +56,40 @@ export default function ProjectPage() {
       });
   }, [params.projectId, params.teamId, router]);
 
-  const filteredTasks = tasks.filter((task) => {
-    const matchesStatus =
-      statusFilter === "ALL" || task.status === statusFilter;
+  const filteredTasks = tasks
+    .filter((task) => {
+      const matchesStatus =
+        statusFilter === "ALL" || task.status === statusFilter;
 
-    const matchesPriority =
-      priorityFilter === "ALL" || task.priority === priorityFilter;
+      const matchesPriority =
+        priorityFilter === "ALL" || task.priority === priorityFilter;
 
-    const matchesSearch = task.title
-      .toLowerCase()
-      .includes(search.toLowerCase());
+      const matchesSearch = task.title
+        .toLowerCase()
+        .includes(search.toLowerCase());
 
-    return matchesStatus && matchesPriority && matchesSearch;
-  });
+      return matchesStatus && matchesPriority && matchesSearch;
+    })
+    .sort((a, b) => {
+      if (sortBy === "DUE_DATE") {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      }
+
+      if (sortBy === "PRIORITY") {
+        const priorityOrder = {
+          HIGH: 3,
+          MEDIUM: 2,
+          LOW: 1,
+        };
+
+        return priorityOrder[b.priority] - priorityOrder[a.priority];
+      }
+
+      return 0;
+    });
 
   if (loading) {
     return <p className="p-8">Loading...</p>;
@@ -132,6 +156,18 @@ export default function ProjectPage() {
         <option value="LOW">Low</option>
         <option value="MEDIUM">Medium</option>
         <option value="HIGH">High</option>
+      </select>
+
+      <select
+        value={sortBy}
+        onChange={(event) =>
+          setSortBy(event.target.value as "NEWEST" | "DUE_DATE" | "PRIORITY")
+        }
+        className="mt-4 ml-3 rounded-md border px-3 py-2"
+      >
+        <option value="NEWEST">Newest</option>
+        <option value="DUE_DATE">Due Date</option>
+        <option value="PRIORITY">Priority</option>
       </select>
 
       <input
