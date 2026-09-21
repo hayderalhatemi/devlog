@@ -10,6 +10,11 @@ type Task = {
   status: "TODO" | "IN_PROGRESS" | "DONE";
   priority: "LOW" | "MEDIUM" | "HIGH";
   dueDate: string | null;
+  assignee: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
 };
 
 export default function ProjectPage() {
@@ -26,6 +31,7 @@ export default function ProjectPage() {
   const [priorityFilter, setPriorityFilter] = useState<
     "ALL" | "LOW" | "MEDIUM" | "HIGH"
   >("ALL");
+  const [assigneeFilter, setAssigneeFilter] = useState("ALL");
   const [sortBy, setSortBy] = useState<"NEWEST" | "DUE_DATE" | "PRIORITY">(
     "NEWEST",
   );
@@ -72,6 +78,14 @@ export default function ProjectPage() {
       });
   }, [params.projectId, params.teamId, router]);
 
+  const assignees = Array.from(
+    new Map(
+      tasks
+        .filter((task) => task.assignee)
+        .map((task) => [task.assignee!.id, task.assignee!]),
+    ).values(),
+  );
+
   const filteredTasks = tasks
     .filter((task) => {
       const matchesStatus =
@@ -80,11 +94,16 @@ export default function ProjectPage() {
       const matchesPriority =
         priorityFilter === "ALL" || task.priority === priorityFilter;
 
+      const matchesAssignee =
+        assigneeFilter === "ALL" || task.assignee?.id === assigneeFilter;
+
       const matchesSearch = task.title
         .toLowerCase()
         .includes(search.toLowerCase());
 
-      return matchesStatus && matchesPriority && matchesSearch;
+      return (
+        matchesStatus && matchesPriority && matchesAssignee && matchesSearch
+      );
     })
     .sort((a, b) => {
       if (sortBy === "DUE_DATE") {
@@ -181,6 +200,20 @@ export default function ProjectPage() {
       </select>
 
       <select
+        value={assigneeFilter}
+        onChange={(event) => setAssigneeFilter(event.target.value)}
+        className="mt-4 ml-3 rounded-md border px-3 py-2"
+      >
+        <option value="ALL">All Assignees</option>
+
+        {assignees.map((assignee) => (
+          <option key={assignee.id} value={assignee.id}>
+            {assignee.name}
+          </option>
+        ))}
+      </select>
+
+      <select
         value={sortBy}
         onChange={(event) =>
           setSortBy(event.target.value as "NEWEST" | "DUE_DATE" | "PRIORITY")
@@ -226,6 +259,8 @@ export default function ProjectPage() {
             <div className="mt-2 flex gap-4 text-sm text-gray-600">
               <span>{task.status}</span>
               <span>{task.priority}</span>
+
+              {task.assignee && <span>{task.assignee.name}</span>}
 
               {task.dueDate && (
                 <span>{new Date(task.dueDate).toLocaleDateString()}</span>

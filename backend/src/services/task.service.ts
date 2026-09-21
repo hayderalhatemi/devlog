@@ -115,6 +115,15 @@ export const getTasks = async (
   const [tasks, totalItems] = await Promise.all([
     prisma.task.findMany({
       where,
+      include: {
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
       orderBy: {
         [sortBy]: sortOrder,
       },
