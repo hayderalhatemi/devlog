@@ -261,7 +261,7 @@ export default function ProjectPage() {
           >
             <h2 className="font-semibold">{task.title}</h2>
 
-            <div className="mt-2 flex gap-4 text-sm text-gray-600">
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
               <span>{task.status}</span>
               <span>{task.priority}</span>
 
