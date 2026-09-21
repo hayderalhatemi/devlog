@@ -17,6 +17,9 @@ export default function ProjectPage() {
   const params = useParams<{ teamId: string; projectId: string }>();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projectName, setProjectName] = useState("");
+  const [projectDescription, setProjectDescription] = useState<string | null>(
+    null,
+  );
   const [statusFilter, setStatusFilter] = useState<
     "ALL" | "TODO" | "IN_PROGRESS" | "DONE"
   >("ALL");
@@ -50,6 +53,7 @@ export default function ProjectPage() {
       .then(([projectData, tasksData]) => {
         if (projectData.success) {
           setProjectName(projectData.data.name);
+          setProjectDescription(projectData.data.description);
         } else {
           setError(projectData.message || "Failed to load project");
         }
@@ -117,7 +121,12 @@ export default function ProjectPage() {
       </button>
 
       <h1 className="text-3xl font-bold">{projectName}</h1>
-      <p className="mt-1 text-gray-600">Tasks</p>
+
+      {projectDescription && (
+        <p className="mt-1 text-gray-600">{projectDescription}</p>
+      )}
+
+      <h2 className="mt-4 text-xl font-semibold">Tasks</h2>
 
       <button
         onClick={() =>
