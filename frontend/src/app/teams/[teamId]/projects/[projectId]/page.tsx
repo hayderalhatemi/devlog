@@ -19,6 +19,7 @@ export default function ProjectPage() {
   const [statusFilter, setStatusFilter] = useState<
     "ALL" | "TODO" | "IN_PROGRESS" | "DONE"
   >("ALL");
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -49,10 +50,16 @@ export default function ProjectPage() {
       });
   }, [params.projectId, params.teamId, router]);
 
-  const filteredTasks =
-    statusFilter === "ALL"
-      ? tasks
-      : tasks.filter((task) => task.status === statusFilter);
+  const filteredTasks = tasks.filter((task) => {
+    const matchesStatus =
+      statusFilter === "ALL" || task.status === statusFilter;
+
+    const matchesSearch = task.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    return matchesStatus && matchesSearch;
+  });
 
   if (loading) {
     return <p className="p-8">Loading...</p>;
@@ -105,6 +112,14 @@ export default function ProjectPage() {
         <option value="IN_PROGRESS">In Progress</option>
         <option value="DONE">Done</option>
       </select>
+
+      <input
+        type="text"
+        placeholder="Search tasks..."
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
+        className="mt-4 ml-3 rounded-md border px-3 py-2"
+      />
 
       {error && <p className="mt-4 text-red-600">{error}</p>}
 
