@@ -6,31 +6,44 @@ import { useRouter } from "next/navigation";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      },
-    );
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      localStorage.setItem("token", data.data.token);
-      router.push("/dashboard");
+      if (data.success) {
+        localStorage.setItem("token", data.data.token);
+        router.push("/dashboard");
+      } else {
+        setError(data.message || "Failed to sign in");
+      }
+    } catch {
+      setError("Failed to sign in");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -69,11 +82,14 @@ export default function LoginPage() {
             />
           </div>
 
+          {error && <p className="text-red-600">{error}</p>}
+
           <button
             type="submit"
-            className="w-full rounded-md bg-black px-4 py-2 font-medium text-white"
+            disabled={loading}
+            className="w-full cursor-pointer rounded-md bg-black px-4 py-2 font-medium text-white disabled:opacity-50"
           >
-            Sign in
+            {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>
 
