@@ -34,7 +34,12 @@ export const getMyTeams = async (userId: string) => {
     },
 
     include: {
-      members: true,
+      _count: {
+        select: {
+          members: true,
+          projects: true,
+        },
+      },
     },
   });
 };

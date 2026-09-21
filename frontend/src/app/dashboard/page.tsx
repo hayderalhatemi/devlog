@@ -7,6 +7,10 @@ import { apiFetch } from "@/lib/api";
 type Team = {
   id: string;
   name: string;
+  _count: {
+    members: number;
+    projects: number;
+  };
 };
 
 export default function DashboardPage() {
@@ -71,7 +75,13 @@ export default function DashboardPage() {
             onClick={() => router.push(`/teams/${team.id}`)}
             className="cursor-pointer rounded-md border p-4 hover:bg-gray-50"
           >
-            {team.name}
+            <h3 className="font-semibold">{team.name}</h3>
+            <p className="mt-1 text-sm text-gray-600">
+              {team._count.members}{" "}
+              {team._count.members === 1 ? "member" : "members"} •{" "}
+              {team._count.projects}{" "}
+              {team._count.projects === 1 ? "project" : "projects"}
+            </p>
           </div>
         ))}
       </div>
