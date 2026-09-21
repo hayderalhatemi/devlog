@@ -95,7 +95,9 @@ export default function ProjectPage() {
         priorityFilter === "ALL" || task.priority === priorityFilter;
 
       const matchesAssignee =
-        assigneeFilter === "ALL" || task.assignee?.id === assigneeFilter;
+        assigneeFilter === "ALL" ||
+        (assigneeFilter === "UNASSIGNED" && !task.assignee) ||
+        task.assignee?.id === assigneeFilter;
 
       const matchesSearch = task.title
         .toLowerCase()
@@ -205,6 +207,7 @@ export default function ProjectPage() {
         className="mt-4 ml-3 rounded-md border px-3 py-2"
       >
         <option value="ALL">All Assignees</option>
+        <option value="UNASSIGNED">Unassigned</option>
 
         {assignees.map((assignee) => (
           <option key={assignee.id} value={assignee.id}>
