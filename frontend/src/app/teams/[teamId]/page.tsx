@@ -148,7 +148,7 @@ export default function TeamPage() {
       <h1 className="text-3xl font-bold">{teamName}</h1>
       <p className="mt-1 text-gray-600">Projects</p>
 
-      <div className="mt-4 flex gap-3">
+      <div className="mt-4 flex flex-wrap gap-3">
         <button
           onClick={() => router.push(`/teams/${params.teamId}/projects/new`)}
           className="cursor-pointer rounded-md bg-black px-4 py-2 text-white"
