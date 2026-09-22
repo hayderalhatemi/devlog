@@ -245,7 +245,10 @@ export default function MembersPage() {
       <h1 className="text-3xl font-bold">Team Members</h1>
 
       {isOwner && (
-        <form onSubmit={handleAddMember} className="mt-6 flex max-w-md gap-3">
+        <form
+          onSubmit={handleAddMember}
+          className="mt-6 flex max-w-md flex-wrap gap-3"
+        >
           <input
             type="email"
             placeholder="Member email"
@@ -275,7 +278,7 @@ export default function MembersPage() {
             {member.role === "OWNER" || !isOwner ? (
               <p className="mt-1 text-sm">{member.role}</p>
             ) : (
-              <div className="mt-2 flex gap-3">
+              <div className="mt-2 flex flex-wrap gap-3">
                 <select
                   value={member.role}
                   onChange={(event) =>
