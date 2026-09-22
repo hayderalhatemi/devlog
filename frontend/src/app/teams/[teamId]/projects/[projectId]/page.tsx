@@ -61,6 +61,7 @@ export default function ProjectPage() {
   );
 
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
 
   const [meta, setMeta] = useState<Meta>({
@@ -112,6 +113,14 @@ export default function ProjectPage() {
   }, [params.projectId, params.teamId, router]);
 
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [search]);
+
+  useEffect(() => {
     const query = new URLSearchParams();
 
     query.set("page", page.toString());
@@ -129,8 +138,8 @@ export default function ProjectPage() {
       query.set("assigneeId", assigneeFilter);
     }
 
-    if (search.trim()) {
-      query.set("search", search.trim());
+    if (debouncedSearch.trim()) {
+      query.set("search", debouncedSearch.trim());
     }
 
     if (sortBy === "NEWEST") {
@@ -174,7 +183,7 @@ export default function ProjectPage() {
     priorityFilter,
     assigneeFilter,
     sortBy,
-    search,
+    debouncedSearch,
   ]);
 
   function resetPage() {
