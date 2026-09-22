@@ -51,36 +51,57 @@ export default function RegisterPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
+        <button
+          onClick={() => router.push("/login")}
+          className="mb-6 cursor-pointer"
+        >
+          ← Back
+        </button>
         <h1 className="text-3xl font-bold">DevLog</h1>
         <p className="mt-2 text-gray-600">Create your account</p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            required
-            className="w-full rounded-md border p-2"
-          />
+          <div>
+            <label htmlFor="name" className="mb-1 block font-medium">
+              Name
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              required
+              className="w-full rounded-md border p-2"
+            />
+          </div>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-            className="w-full rounded-md border p-2"
-          />
+          <div>
+            <label htmlFor="email" className="mb-1 block font-medium">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+              className="w-full rounded-md border p-2"
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-            className="w-full rounded-md border p-2"
-          />
+          <div>
+            <label htmlFor="password" className="mb-1 block font-medium">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              className="w-full rounded-md border p-2"
+            />
+          </div>
 
           {error && <p className="text-red-600">{error}</p>}
 

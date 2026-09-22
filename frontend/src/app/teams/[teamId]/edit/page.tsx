@@ -129,13 +129,19 @@ export default function EditTeamPage() {
       <h1 className="text-3xl font-bold">Edit Team</h1>
 
       <form onSubmit={handleSubmit} className="mt-6 max-w-md space-y-4">
-        <input
-          type="text"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          required
-          className="w-full rounded-md border p-2"
-        />
+        <div>
+          <label htmlFor="name" className="mb-1 block">
+            Team Name
+          </label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            required
+            className="w-full rounded-md border p-2"
+          />
+        </div>
 
         {error && <p className="text-red-600">{error}</p>}
 

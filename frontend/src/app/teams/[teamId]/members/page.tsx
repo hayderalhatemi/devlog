@@ -249,18 +249,23 @@ export default function MembersPage() {
           onSubmit={handleAddMember}
           className="mt-6 flex max-w-md flex-wrap gap-3"
         >
-          <input
-            type="email"
-            placeholder="Member email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-            className="flex-1 rounded-md border p-2"
-          />
+          <div className="flex-1">
+            <label htmlFor="member-email" className="mb-1 block">
+              Member Email
+            </label>
+            <input
+              id="member-email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+              className="w-full rounded-md border p-2"
+            />
+          </div>
 
           <button
             type="submit"
-            className="cursor-pointer rounded-md bg-black px-4 py-2 text-white"
+            className="mt-7 cursor-pointer rounded-md bg-black px-4 py-2 text-white"
           >
             Add Member
           </button>

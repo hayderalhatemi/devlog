@@ -140,59 +140,77 @@ export default function EditTaskPage() {
       <h1 className="text-3xl font-bold">Edit Task</h1>
 
       <form onSubmit={handleSubmit} className="mt-6 max-w-md space-y-4">
-        <input
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          required
-          className="w-full rounded-md border p-2"
-        />
+        <label className="block">
+          <span className="mb-1 block font-medium">Title</span>
+          <input
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            required
+            className="w-full rounded-md border p-2"
+          />
+        </label>
 
-        <textarea
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          className="w-full rounded-md border p-2"
-        />
+        <label className="block">
+          <span className="mb-1 block font-medium">Description</span>
+          <textarea
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            className="w-full rounded-md border p-2"
+          />
+        </label>
 
-        <select
-          value={status}
-          onChange={(event) => setStatus(event.target.value)}
-          className="w-full rounded-md border p-2"
-        >
-          <option value="TODO">Todo</option>
-          <option value="IN_PROGRESS">In Progress</option>
-          <option value="DONE">Done</option>
-        </select>
+        <label className="block">
+          <span className="mb-1 block font-medium">Status</span>
+          <select
+            value={status}
+            onChange={(event) => setStatus(event.target.value)}
+            className="w-full rounded-md border p-2"
+          >
+            <option value="TODO">Todo</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="DONE">Done</option>
+          </select>
+        </label>
 
-        <select
-          value={priority}
-          onChange={(event) => setPriority(event.target.value)}
-          className="w-full rounded-md border p-2"
-        >
-          <option value="LOW">Low</option>
-          <option value="MEDIUM">Medium</option>
-          <option value="HIGH">High</option>
-        </select>
+        <label className="block">
+          <span className="mb-1 block font-medium">Priority</span>
+          <select
+            value={priority}
+            onChange={(event) => setPriority(event.target.value)}
+            className="w-full rounded-md border p-2"
+          >
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+          </select>
+        </label>
 
-        <input
-          type="date"
-          value={dueDate}
-          onChange={(event) => setDueDate(event.target.value)}
-          className="w-full rounded-md border p-2"
-        />
+        <label className="block">
+          <span className="mb-1 block font-medium">Due Date</span>
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(event) => setDueDate(event.target.value)}
+            className="w-full rounded-md border p-2"
+          />
+        </label>
 
-        <select
-          value={assigneeId}
-          onChange={(event) => setAssigneeId(event.target.value)}
-          className="w-full rounded-md border p-2"
-        >
-          <option value="">Unassigned</option>
+        <label className="block">
+          <span className="mb-1 block font-medium">Assignee</span>
+          <select
+            value={assigneeId}
+            onChange={(event) => setAssigneeId(event.target.value)}
+            className="w-full rounded-md border p-2"
+          >
+            <option value="">Unassigned</option>
 
-          {members.map((member) => (
-            <option key={member.user.id} value={member.user.id}>
-              {member.user.name} ({member.user.email})
-            </option>
-          ))}
-        </select>
+            {members.map((member) => (
+              <option key={member.user.id} value={member.user.id}>
+                {member.user.name} ({member.user.email})
+              </option>
+            ))}
+          </select>
+        </label>
 
         {error && <p className="text-red-600">{error}</p>}
 

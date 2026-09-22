@@ -136,18 +136,31 @@ export default function EditProjectPage() {
       <h1 className="text-3xl font-bold">Edit Project</h1>
 
       <form onSubmit={handleSubmit} className="mt-6 max-w-md space-y-4">
-        <input
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          required
-          className="w-full rounded-md border p-2"
-        />
+        <div>
+          <label htmlFor="name" className="mb-1 block">
+            Project Name
+          </label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            required
+            className="w-full rounded-md border p-2"
+          />
+        </div>
 
-        <textarea
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          className="w-full rounded-md border p-2"
-        />
+        <div>
+          <label htmlFor="description" className="mb-1 block">
+            Description
+          </label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            className="w-full rounded-md border p-2"
+          />
+        </div>
 
         {error && <p className="text-red-600">{error}</p>}
 

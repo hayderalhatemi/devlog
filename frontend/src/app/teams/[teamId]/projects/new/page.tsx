@@ -63,21 +63,31 @@ export default function NewProjectPage() {
       <h1 className="text-3xl font-bold">Create Project</h1>
 
       <form onSubmit={handleSubmit} className="mt-6 max-w-md space-y-4">
-        <input
-          type="text"
-          placeholder="Project name"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          required
-          className="w-full rounded-md border p-2"
-        />
+        <div>
+          <label htmlFor="name" className="mb-1 block">
+            Project Name
+          </label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            required
+            className="w-full rounded-md border p-2"
+          />
+        </div>
 
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          className="w-full rounded-md border p-2"
-        />
+        <div>
+          <label htmlFor="description" className="mb-1 block">
+            Description
+          </label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            className="w-full rounded-md border p-2"
+          />
+        </div>
 
         {error && <p className="text-red-600">{error}</p>}
 
