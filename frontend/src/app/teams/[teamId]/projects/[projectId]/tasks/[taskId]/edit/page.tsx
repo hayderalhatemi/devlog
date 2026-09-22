@@ -121,12 +121,17 @@ export default function EditTaskPage() {
   }
 
   if (loading) {
-    return <main className="p-8">Loading...</main>;
+    return (
+      <main className="p-8">
+        <p role="status">Loading...</p>
+      </main>
+    );
   }
 
   return (
     <main className="p-8">
       <button
+        type="button"
         onClick={() =>
           router.push(
             `/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,

@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -51,12 +52,9 @@ export default function RegisterPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-        <button
-          onClick={() => router.push("/login")}
-          className="mb-6 cursor-pointer"
-        >
+        <Link href="/login" className="mb-6 inline-block">
           ← Back
-        </button>
+        </Link>
         <h1 className="text-3xl font-bold">DevLog</h1>
         <p className="mt-2 text-gray-600">Create your account</p>
 
@@ -68,6 +66,7 @@ export default function RegisterPage() {
             <input
               id="name"
               type="text"
+              autoComplete="name"
               value={name}
               onChange={(event) => setName(event.target.value)}
               required
@@ -82,6 +81,7 @@ export default function RegisterPage() {
             <input
               id="email"
               type="email"
+              autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
@@ -96,6 +96,7 @@ export default function RegisterPage() {
             <input
               id="password"
               type="password"
+              autoComplete="new-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required

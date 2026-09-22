@@ -50,6 +50,7 @@ export default function NewTeamPage() {
   return (
     <main className="p-8">
       <button
+        type="button"
         onClick={() => router.push("/dashboard")}
         className="mb-6 cursor-pointer"
       >

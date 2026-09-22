@@ -114,12 +114,17 @@ export default function EditTeamPage() {
   }
 
   if (loading) {
-    return <main className="p-8">Loading...</main>;
+    return (
+      <main className="p-8">
+        <p role="status">Loading...</p>
+      </main>
+    );
   }
 
   return (
     <main className="p-8">
       <button
+        type="button"
         onClick={() => router.push(`/teams/${params.teamId}`)}
         className="mb-6 cursor-pointer"
       >
@@ -158,6 +163,7 @@ export default function EditTeamPage() {
       </form>
 
       <button
+        type="button"
         onClick={handleDelete}
         className="mt-4 cursor-pointer rounded-md bg-red-600 px-4 py-2 text-white"
       >

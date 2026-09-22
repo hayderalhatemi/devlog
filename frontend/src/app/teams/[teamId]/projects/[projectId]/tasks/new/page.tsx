@@ -93,6 +93,7 @@ export default function NewTaskPage() {
   return (
     <main className="p-8">
       <button
+        type="button"
         onClick={() =>
           router.push(`/teams/${params.teamId}/projects/${params.projectId}`)
         }

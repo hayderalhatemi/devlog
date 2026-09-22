@@ -45,7 +45,11 @@ export default function DashboardPage() {
   }, [router]);
 
   if (loading) {
-    return <p className="p-8">Loading...</p>;
+    return (
+      <main className="p-8">
+        <p role="status">Loading...</p>
+      </main>
+    );
   }
 
   return (
@@ -56,13 +60,18 @@ export default function DashboardPage() {
       <h2 className="mt-8 text-xl font-semibold">Your teams</h2>
 
       <button
+        type="button"
         onClick={() => router.push("/teams/new")}
         className="mt-4 cursor-pointer rounded-md bg-black px-4 py-2 text-white"
       >
         New Team
       </button>
 
-      {error && <p className="mt-4 text-red-600">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-4 text-red-600">
+          {error}
+        </p>
+      )}
 
       <div className="mt-4 space-y-3">
         {!error && teams.length === 0 && (
@@ -70,19 +79,21 @@ export default function DashboardPage() {
         )}
 
         {teams.map((team) => (
-          <div
+          <button
             key={team.id}
+            type="button"
             onClick={() => router.push(`/teams/${team.id}`)}
-            className="cursor-pointer rounded-md border p-4 hover:bg-gray-50"
+            className="block w-full cursor-pointer rounded-md border p-4 text-left hover:bg-gray-50"
           >
-            <h3 className="font-semibold">{team.name}</h3>
-            <p className="mt-1 text-sm text-gray-600">
+            <span className="block font-semibold">{team.name}</span>
+
+            <span className="mt-1 block text-sm text-gray-600">
               {team._count.members}{" "}
               {team._count.members === 1 ? "member" : "members"} •{" "}
               {team._count.projects}{" "}
               {team._count.projects === 1 ? "project" : "projects"}
-            </p>
-          </div>
+            </span>
+          </button>
         ))}
       </div>
     </main>

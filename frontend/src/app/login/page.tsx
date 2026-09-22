@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -61,6 +62,7 @@ export default function LoginPage() {
             <input
               id="email"
               type="email"
+              autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               className="w-full rounded-md border border-gray-300 px-3 py-2"
@@ -75,6 +77,7 @@ export default function LoginPage() {
             <input
               id="password"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               className="w-full rounded-md border border-gray-300 px-3 py-2"
@@ -99,12 +102,9 @@ export default function LoginPage() {
 
         <p className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
-          <button
-            onClick={() => router.push("/register")}
-            className="cursor-pointer font-medium underline"
-          >
+          <Link href="/register" className="font-medium underline">
             Register
-          </button>
+          </Link>
         </p>
       </div>
     </main>

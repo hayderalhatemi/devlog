@@ -96,13 +96,19 @@ export default function TaskPage() {
   }
 
   if (loading) {
-    return <main className="p-8">Loading...</main>;
+    return (
+      <main className="p-8">
+        <p role="status">Loading...</p>
+      </main>
+    );
   }
 
   if (!task) {
     return (
       <main className="p-8">
-        <p className="text-red-600">{error || "Task not found"}</p>
+        <p role="alert" className="text-red-600">
+          {error || "Task not found"}
+        </p>
       </main>
     );
   }
@@ -110,6 +116,7 @@ export default function TaskPage() {
   return (
     <main className="p-8">
       <button
+        type="button"
         onClick={() =>
           router.push(`/teams/${params.teamId}/projects/${params.projectId}`)
         }
@@ -134,10 +141,15 @@ export default function TaskPage() {
         )}
       </div>
 
-      {error && <p className="mt-4 text-red-600">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-4 text-red-600">
+          {error}
+        </p>
+      )}
 
       <div className="mt-6 flex flex-wrap gap-3">
         <button
+          type="button"
           onClick={() =>
             router.push(
               `/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}/edit`,
@@ -149,6 +161,7 @@ export default function TaskPage() {
         </button>
 
         <button
+          type="button"
           onClick={handleDelete}
           className="cursor-pointer rounded-md bg-red-600 px-4 py-2 text-white"
         >

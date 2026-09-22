@@ -133,12 +133,17 @@ export default function TeamPage() {
   }
 
   if (loading) {
-    return <p className="p-8">Loading...</p>;
+    return (
+      <main className="p-8">
+        <p role="status">Loading...</p>
+      </main>
+    );
   }
 
   return (
     <main className="p-8">
       <button
+        type="button"
         onClick={() => router.push("/dashboard")}
         className="mb-6 cursor-pointer"
       >
@@ -146,10 +151,11 @@ export default function TeamPage() {
       </button>
 
       <h1 className="text-3xl font-bold">{teamName}</h1>
-      <p className="mt-1 text-gray-600">Projects</p>
+      <h2 className="mt-1 text-xl font-semibold">Projects</h2>
 
       <div className="mt-4 flex flex-wrap gap-3">
         <button
+          type="button"
           onClick={() => router.push(`/teams/${params.teamId}/projects/new`)}
           className="cursor-pointer rounded-md bg-black px-4 py-2 text-white"
         >
@@ -158,6 +164,7 @@ export default function TeamPage() {
 
         {isOwner && (
           <button
+            type="button"
             onClick={() => router.push(`/teams/${params.teamId}/edit`)}
             className="cursor-pointer rounded-md border px-4 py-2"
           >
@@ -166,6 +173,7 @@ export default function TeamPage() {
         )}
 
         <button
+          type="button"
           onClick={() => router.push(`/teams/${params.teamId}/members`)}
           className="cursor-pointer rounded-md border px-4 py-2"
         >
@@ -174,6 +182,7 @@ export default function TeamPage() {
 
         {currentRole && !isOwner && (
           <button
+            type="button"
             onClick={handleLeaveTeam}
             className="cursor-pointer rounded-md border px-4 py-2"
           >
@@ -182,7 +191,11 @@ export default function TeamPage() {
         )}
       </div>
 
-      {error && <p className="mt-2 text-red-600">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-2 text-red-600">
+          {error}
+        </p>
+      )}
 
       <div className="mt-6 space-y-3">
         {!error && projects.length === 0 && (
@@ -190,19 +203,22 @@ export default function TeamPage() {
         )}
 
         {projects.map((project) => (
-          <div
+          <button
             key={project.id}
+            type="button"
             onClick={() =>
               router.push(`/teams/${params.teamId}/projects/${project.id}`)
             }
-            className="cursor-pointer rounded-md border p-4 hover:bg-gray-50"
+            className="block w-full cursor-pointer rounded-md border p-4 text-left hover:bg-gray-50"
           >
-            <h2 className="font-semibold">{project.name}</h2>
+            <span className="block font-semibold">{project.name}</span>
 
             {project.description && (
-              <p className="mt-1 text-gray-600">{project.description}</p>
+              <span className="mt-1 block text-gray-600">
+                {project.description}
+              </span>
             )}
-          </div>
+          </button>
         ))}
       </div>
     </main>

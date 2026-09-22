@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Header() {
   const router = useRouter();
@@ -17,14 +18,12 @@ export default function Header() {
 
   return (
     <header className="flex items-center justify-between border-b px-8 py-4">
-      <button
-        onClick={() => router.push("/dashboard")}
-        className="cursor-pointer text-xl font-bold"
-      >
+      <Link href="/dashboard" className="text-xl font-bold">
         DevLog
-      </button>
+      </Link>
 
       <button
+        type="button"
         onClick={handleLogout}
         className="cursor-pointer rounded-md border px-4 py-2"
       >

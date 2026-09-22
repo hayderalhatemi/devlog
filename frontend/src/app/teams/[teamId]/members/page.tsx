@@ -21,6 +21,7 @@ type JwtPayload = {
 export default function MembersPage() {
   const router = useRouter();
   const params = useParams<{ teamId: string }>();
+
   const [members, setMembers] = useState<Member[]>([]);
   const [email, setEmail] = useState("");
   const [currentRole, setCurrentRole] = useState<Member["role"] | null>(null);
@@ -230,12 +231,17 @@ export default function MembersPage() {
   }
 
   if (loading) {
-    return <p className="p-8">Loading...</p>;
+    return (
+      <main className="p-8">
+        <p role="status">Loading...</p>
+      </main>
+    );
   }
 
   return (
     <main className="p-8">
       <button
+        type="button"
         onClick={() => router.push(`/teams/${params.teamId}`)}
         className="mb-6 cursor-pointer"
       >
@@ -247,12 +253,13 @@ export default function MembersPage() {
       {isOwner && (
         <form
           onSubmit={handleAddMember}
-          className="mt-6 flex max-w-md flex-wrap gap-3"
+          className="mt-6 flex max-w-md flex-wrap items-end gap-3"
         >
           <div className="flex-1">
             <label htmlFor="member-email" className="mb-1 block">
               Member Email
             </label>
+
             <input
               id="member-email"
               type="email"
@@ -265,7 +272,7 @@ export default function MembersPage() {
 
           <button
             type="submit"
-            className="mt-7 cursor-pointer rounded-md bg-black px-4 py-2 text-white"
+            className="cursor-pointer rounded-md bg-black px-4 py-2 text-white"
           >
             Add Member
           </button>
@@ -278,48 +285,60 @@ export default function MembersPage() {
         </p>
       )}
 
-      <div className="mt-6 space-y-3">
+      <ul className="mt-6 space-y-3">
         {members.map((member) => (
-          <div key={member.id} className="rounded-md border p-4">
+          <li key={member.id} className="rounded-md border p-4">
             <p className="font-semibold">{member.user.name}</p>
             <p className="text-gray-600">{member.user.email}</p>
 
             {member.role === "OWNER" || !isOwner ? (
-              <p className="mt-1 text-sm">{member.role}</p>
+              <p className="mt-1 text-sm">Role: {member.role}</p>
             ) : (
-              <div className="mt-2 flex flex-wrap gap-3">
-                <select
-                  value={member.role}
-                  onChange={(event) =>
-                    handleRoleChange(
-                      member.user.id,
-                      event.target.value as "ADMIN" | "MEMBER",
-                    )
-                  }
-                  className="rounded-md border p-2"
-                >
-                  <option value="MEMBER">MEMBER</option>
-                  <option value="ADMIN">ADMIN</option>
-                </select>
+              <div className="mt-2 flex flex-wrap items-end gap-3">
+                <div>
+                  <label
+                    htmlFor={`role-${member.id}`}
+                    className="mb-1 block text-sm"
+                  >
+                    Role
+                  </label>
+
+                  <select
+                    id={`role-${member.id}`}
+                    value={member.role}
+                    onChange={(event) =>
+                      handleRoleChange(
+                        member.user.id,
+                        event.target.value as "ADMIN" | "MEMBER",
+                      )
+                    }
+                    className="rounded-md border p-2"
+                  >
+                    <option value="MEMBER">MEMBER</option>
+                    <option value="ADMIN">ADMIN</option>
+                  </select>
+                </div>
 
                 <button
+                  type="button"
                   onClick={() => handleRemoveMember(member.user.id)}
                   className="cursor-pointer rounded-md bg-red-600 px-4 py-2 text-white"
                 >
-                  Remove
+                  Remove {member.user.name}
                 </button>
 
                 <button
+                  type="button"
                   onClick={() => handleTransferOwnership(member.user.id)}
                   className="cursor-pointer rounded-md border px-4 py-2"
                 >
-                  Transfer Ownership
+                  Transfer Ownership to {member.user.name}
                 </button>
               </div>
             )}
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </main>
   );
 }

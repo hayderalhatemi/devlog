@@ -54,6 +54,7 @@ export default function NewProjectPage() {
   return (
     <main className="p-8">
       <button
+        type="button"
         onClick={() => router.push(`/teams/${params.teamId}`)}
         className="mb-6 cursor-pointer"
       >
