@@ -72,9 +72,17 @@ export const getTasks = async (
   page: number = 1,
   limit: number = 10,
   status?: 'TODO' | 'IN_PROGRESS' | 'DONE',
-  sortBy: 'createdAt' | 'updatedAt' | 'title' | 'status' = 'createdAt',
+  sortBy:
+    | 'createdAt'
+    | 'updatedAt'
+    | 'title'
+    | 'status'
+    | 'dueDate'
+    | 'priority' = 'createdAt',
   sortOrder: 'asc' | 'desc' = 'desc',
   search?: string,
+  priority?: 'LOW' | 'MEDIUM' | 'HIGH',
+  assigneeId?: string,
 ) => {
   const membership = await prisma.teamMember.findUnique({
     where: {
@@ -104,6 +112,9 @@ export const getTasks = async (
   const where = {
     projectId,
     ...(status && { status }),
+    ...(priority && { priority }),
+    ...(assigneeId &&
+      (assigneeId === 'UNASSIGNED' ? { assigneeId: null } : { assigneeId })),
     ...(search && {
       OR: [
         { title: { contains: search, mode: 'insensitive' as const } },

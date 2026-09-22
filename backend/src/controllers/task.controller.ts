@@ -71,6 +71,8 @@ export const getTasksController = async (
     query.sortBy,
     query.sortOrder,
     query.search,
+    query.priority,
+    query.assigneeId,
   );
 
   res.status(200).json({
