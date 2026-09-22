@@ -272,7 +272,11 @@ export default function MembersPage() {
         </form>
       )}
 
-      {error && <p className="mt-2 text-red-600">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-2 text-red-600">
+          {error}
+        </p>
+      )}
 
       <div className="mt-6 space-y-3">
         {members.map((member) => (

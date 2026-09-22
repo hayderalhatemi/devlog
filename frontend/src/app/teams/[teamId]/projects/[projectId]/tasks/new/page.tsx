@@ -164,7 +164,11 @@ export default function NewTaskPage() {
           </select>
         </label>
 
-        {error && <p className="text-red-600">{error}</p>}
+        {error && (
+          <p role="alert" className="text-red-600">
+            {error}
+          </p>
+        )}
 
         <button
           type="submit"
