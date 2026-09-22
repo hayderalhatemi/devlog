@@ -126,6 +126,17 @@ export default function EditTaskPage() {
 
   return (
     <main className="p-8">
+      <button
+        onClick={() =>
+          router.push(
+            `/teams/${params.teamId}/projects/${params.projectId}/tasks/${params.taskId}`,
+          )
+        }
+        className="mb-6 cursor-pointer"
+      >
+        ← Back
+      </button>
+
       <h1 className="text-3xl font-bold">Edit Task</h1>
 
       <form onSubmit={handleSubmit} className="mt-6 max-w-md space-y-4">

@@ -124,6 +124,15 @@ export default function EditProjectPage() {
 
   return (
     <main className="p-8">
+      <button
+        onClick={() =>
+          router.push(`/teams/${params.teamId}/projects/${params.projectId}`)
+        }
+        className="mb-6 cursor-pointer"
+      >
+        ← Back
+      </button>
+
       <h1 className="text-3xl font-bold">Edit Project</h1>
 
       <form onSubmit={handleSubmit} className="mt-6 max-w-md space-y-4">
