@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 
 type Task = {
@@ -34,8 +34,47 @@ type Meta = {
   hasPrevPage: boolean;
 };
 
+type StatusFilter = "ALL" | "TODO" | "IN_PROGRESS" | "DONE";
+type PriorityFilter = "ALL" | "LOW" | "MEDIUM" | "HIGH";
+type SortBy = "NEWEST" | "DUE_DATE" | "PRIORITY";
+
+function getInitialPage(value: string | null) {
+  const parsedPage = Number(value);
+
+  if (Number.isInteger(parsedPage) && parsedPage > 0) {
+    return parsedPage;
+  }
+
+  return 1;
+}
+
+function getInitialStatus(value: string | null): StatusFilter {
+  if (value === "TODO" || value === "IN_PROGRESS" || value === "DONE") {
+    return value;
+  }
+
+  return "ALL";
+}
+
+function getInitialPriority(value: string | null): PriorityFilter {
+  if (value === "LOW" || value === "MEDIUM" || value === "HIGH") {
+    return value;
+  }
+
+  return "ALL";
+}
+
+function getInitialSort(value: string | null): SortBy {
+  if (value === "DUE_DATE" || value === "PRIORITY") {
+    return value;
+  }
+
+  return "NEWEST";
+}
+
 export default function ProjectPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const params = useParams<{ teamId: string; projectId: string }>();
 
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -46,23 +85,31 @@ export default function ProjectPage() {
     null,
   );
 
-  const [statusFilter, setStatusFilter] = useState<
-    "ALL" | "TODO" | "IN_PROGRESS" | "DONE"
-  >("ALL");
-
-  const [priorityFilter, setPriorityFilter] = useState<
-    "ALL" | "LOW" | "MEDIUM" | "HIGH"
-  >("ALL");
-
-  const [assigneeFilter, setAssigneeFilter] = useState("ALL");
-
-  const [sortBy, setSortBy] = useState<"NEWEST" | "DUE_DATE" | "PRIORITY">(
-    "NEWEST",
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(() =>
+    getInitialStatus(searchParams.get("status")),
   );
 
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>(() =>
+    getInitialPriority(searchParams.get("priority")),
+  );
+
+  const [assigneeFilter, setAssigneeFilter] = useState(
+    () => searchParams.get("assignee") || "ALL",
+  );
+
+  const [sortBy, setSortBy] = useState<SortBy>(() =>
+    getInitialSort(searchParams.get("sort")),
+  );
+
+  const [search, setSearch] = useState(() => searchParams.get("search") || "");
+
+  const [debouncedSearch, setDebouncedSearch] = useState(
+    () => searchParams.get("search") || "",
+  );
+
+  const [page, setPage] = useState(() =>
+    getInitialPage(searchParams.get("page")),
+  );
 
   const [meta, setMeta] = useState<Meta>({
     page: 1,
@@ -120,6 +167,51 @@ export default function ProjectPage() {
 
     return () => clearTimeout(timeout);
   }, [search]);
+
+  useEffect(() => {
+    const query = new URLSearchParams();
+
+    if (page > 1) {
+      query.set("page", page.toString());
+    }
+
+    if (statusFilter !== "ALL") {
+      query.set("status", statusFilter);
+    }
+
+    if (priorityFilter !== "ALL") {
+      query.set("priority", priorityFilter);
+    }
+
+    if (assigneeFilter !== "ALL") {
+      query.set("assignee", assigneeFilter);
+    }
+
+    if (sortBy !== "NEWEST") {
+      query.set("sort", sortBy);
+    }
+
+    if (debouncedSearch.trim()) {
+      query.set("search", debouncedSearch.trim());
+    }
+
+    const queryString = query.toString();
+    const path = `/teams/${params.teamId}/projects/${params.projectId}`;
+
+    router.replace(queryString ? `${path}?${queryString}` : path, {
+      scroll: false,
+    });
+  }, [
+    params.projectId,
+    params.teamId,
+    page,
+    statusFilter,
+    priorityFilter,
+    assigneeFilter,
+    sortBy,
+    debouncedSearch,
+    router,
+  ]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -267,9 +359,7 @@ export default function ProjectPage() {
             value={statusFilter}
             onChange={(event) => {
               setTasksLoading(true);
-              setStatusFilter(
-                event.target.value as "ALL" | "TODO" | "IN_PROGRESS" | "DONE",
-              );
+              setStatusFilter(event.target.value as StatusFilter);
               resetPage();
             }}
             className="rounded-md border px-3 py-2"
@@ -291,9 +381,7 @@ export default function ProjectPage() {
             value={priorityFilter}
             onChange={(event) => {
               setTasksLoading(true);
-              setPriorityFilter(
-                event.target.value as "ALL" | "LOW" | "MEDIUM" | "HIGH",
-              );
+              setPriorityFilter(event.target.value as PriorityFilter);
               resetPage();
             }}
             className="rounded-md border px-3 py-2"
@@ -341,9 +429,7 @@ export default function ProjectPage() {
             value={sortBy}
             onChange={(event) => {
               setTasksLoading(true);
-              setSortBy(
-                event.target.value as "NEWEST" | "DUE_DATE" | "PRIORITY",
-              );
+              setSortBy(event.target.value as SortBy);
               resetPage();
             }}
             className="rounded-md border px-3 py-2"
