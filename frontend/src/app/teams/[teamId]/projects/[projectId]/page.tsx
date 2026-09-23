@@ -185,6 +185,7 @@ export default function ProjectPage() {
           setTasksLoading(false);
         }
       });
+
     return () => {
       controller.abort();
     };
@@ -441,35 +442,45 @@ export default function ProjectPage() {
             ))}
           </div>
 
-          {meta.totalPages > 1 && (
-            <div className="mt-6 flex items-center gap-4">
-              <button
-                type="button"
-                disabled={!meta.hasPrevPage}
-                onClick={() => {
-                  setTasksLoading(true);
-                  setPage((currentPage) => currentPage - 1);
-                }}
-                className="cursor-pointer rounded-md border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Previous
-              </button>
+          {meta.totalItems > 0 && (
+            <div className="mt-6">
+              <p className="mb-3 text-sm text-gray-600">
+                Showing {(meta.page - 1) * meta.limit + 1}–
+                {Math.min(meta.page * meta.limit, meta.totalItems)} of{" "}
+                {meta.totalItems} tasks
+              </p>
 
-              <span>
-                Page {meta.page} of {meta.totalPages}
-              </span>
+              {meta.totalPages > 1 && (
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    disabled={!meta.hasPrevPage || tasksLoading}
+                    onClick={() => {
+                      setTasksLoading(true);
+                      setPage((currentPage) => currentPage - 1);
+                    }}
+                    className="cursor-pointer rounded-md border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
 
-              <button
-                type="button"
-                disabled={!meta.hasNextPage}
-                onClick={() => {
-                  setTasksLoading(true);
-                  setPage((currentPage) => currentPage + 1);
-                }}
-                className="cursor-pointer rounded-md border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Next
-              </button>
+                  <span>
+                    Page {meta.page} of {meta.totalPages}
+                  </span>
+
+                  <button
+                    type="button"
+                    disabled={!meta.hasNextPage || tasksLoading}
+                    onClick={() => {
+                      setTasksLoading(true);
+                      setPage((currentPage) => currentPage + 1);
+                    }}
+                    className="cursor-pointer rounded-md border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </>
