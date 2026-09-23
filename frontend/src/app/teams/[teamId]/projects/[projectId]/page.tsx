@@ -203,6 +203,16 @@ export default function ProjectPage() {
     setPage(1);
   }
 
+  function clearFilters() {
+    setTasksLoading(true);
+    setStatusFilter("ALL");
+    setPriorityFilter("ALL");
+    setAssigneeFilter("ALL");
+    setSortBy("NEWEST");
+    setSearch("");
+    setPage(1);
+  }
+
   return (
     <main className="p-8">
       <button
@@ -360,6 +370,14 @@ export default function ProjectPage() {
             className="rounded-md border px-3 py-2"
           />
         </div>
+
+        <button
+          type="button"
+          onClick={clearFilters}
+          className="cursor-pointer rounded-md border px-4 py-2"
+        >
+          Clear Filters
+        </button>
       </div>
 
       {error && (
