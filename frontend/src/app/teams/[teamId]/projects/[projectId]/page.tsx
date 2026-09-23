@@ -374,7 +374,14 @@ export default function ProjectPage() {
         <button
           type="button"
           onClick={clearFilters}
-          className="cursor-pointer rounded-md border px-4 py-2"
+          disabled={
+            statusFilter === "ALL" &&
+            priorityFilter === "ALL" &&
+            assigneeFilter === "ALL" &&
+            sortBy === "NEWEST" &&
+            search === ""
+          }
+          className="cursor-pointer rounded-md border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Clear Filters
         </button>
