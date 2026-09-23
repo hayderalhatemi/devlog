@@ -122,7 +122,9 @@ export default function ProjectPage() {
 
   const [loading, setLoading] = useState(true);
   const [tasksLoading, setTasksLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [pageError, setPageError] = useState("");
+  const [tasksError, setTasksError] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -146,17 +148,17 @@ export default function ProjectPage() {
           setProjectName(projectData.data.name);
           setProjectDescription(projectData.data.description);
         } else {
-          setError(projectData.message || "Failed to load project");
+          setPageError(projectData.message || "Failed to load project");
         }
 
         if (membersData.success) {
           setMembers(membersData.data);
         } else {
-          setError(membersData.message || "Failed to load members");
+          setPageError(membersData.message || "Failed to load members");
         }
       })
       .catch(() => {
-        setError("Failed to load project");
+        setPageError("Failed to load project");
       });
   }, [params.projectId, params.teamId, router]);
 
@@ -258,10 +260,11 @@ export default function ProjectPage() {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
+          setTasksError("");
           setTasks(data.data);
           setMeta(data.meta);
         } else {
-          setError(data.message || "Failed to load tasks");
+          setTasksError(data.message || "Failed to load tasks");
         }
       })
       .catch((error) => {
@@ -269,7 +272,7 @@ export default function ProjectPage() {
           return;
         }
 
-        setError("Failed to load tasks");
+        setTasksError("Failed to load tasks");
       })
       .finally(() => {
         if (!controller.signal.aborted) {
@@ -290,6 +293,7 @@ export default function ProjectPage() {
     assigneeFilter,
     sortBy,
     debouncedSearch,
+    retryCount,
   ]);
 
   function resetPage() {
@@ -474,10 +478,27 @@ export default function ProjectPage() {
         </button>
       </div>
 
-      {error && (
+      {pageError && (
         <p role="alert" className="mt-4 text-red-600">
-          {error}
+          {pageError}
         </p>
+      )}
+
+      {tasksError && (
+        <div role="alert" className="mt-4">
+          <p className="text-red-600">{tasksError}</p>
+
+          <button
+            type="button"
+            onClick={() => {
+              setTasksLoading(true);
+              setRetryCount((current) => current + 1);
+            }}
+            className="mt-2 cursor-pointer rounded-md border px-4 py-2"
+          >
+            Retry
+          </button>
+        </div>
       )}
 
       {loading && (
@@ -492,7 +513,7 @@ export default function ProjectPage() {
         </p>
       )}
 
-      {!loading && !error && (
+      {!loading && !pageError && !tasksError && (
         <>
           <div className="mt-6 space-y-3" aria-live="polite">
             {tasks.length === 0 && (
