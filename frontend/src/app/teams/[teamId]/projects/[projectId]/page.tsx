@@ -121,6 +121,7 @@ export default function ProjectPage() {
   }, [search]);
 
   useEffect(() => {
+    const controller = new AbortController();
     const query = new URLSearchParams();
 
     query.set("page", page.toString());
@@ -159,6 +160,7 @@ export default function ProjectPage() {
 
     apiFetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/teams/${params.teamId}/projects/${params.projectId}/tasks?${query.toString()}`,
+      { signal: controller.signal },
     )
       .then((response) => response.json())
       .then((data) => {
@@ -169,12 +171,20 @@ export default function ProjectPage() {
           setError(data.message || "Failed to load tasks");
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
         setError("Failed to load tasks");
       })
       .finally(() => {
         setLoading(false);
       });
+
+    return () => {
+      controller.abort();
+    };
   }, [
     params.projectId,
     params.teamId,
