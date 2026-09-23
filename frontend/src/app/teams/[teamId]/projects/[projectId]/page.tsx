@@ -413,33 +413,75 @@ export default function ProjectPage() {
               <p className="text-gray-600">No tasks match this filter.</p>
             )}
 
-            {tasks.map((task) => (
-              <button
-                key={task.id}
-                type="button"
-                onClick={() =>
-                  router.push(
-                    `/teams/${params.teamId}/projects/${params.projectId}/tasks/${task.id}`,
-                  )
-                }
-                className="block w-full cursor-pointer rounded-md border p-4 text-left hover:bg-gray-50"
-              >
-                <span className="block font-semibold">{task.title}</span>
+            {tasks.map((task) => {
+              const statusLabel = {
+                TODO: "To Do",
+                IN_PROGRESS: "In Progress",
+                DONE: "Done",
+              }[task.status];
 
-                <span className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
-                  <span>Status: {task.status}</span>
-                  <span>Priority: {task.priority}</span>
+              const priorityLabel = {
+                LOW: "Low",
+                MEDIUM: "Medium",
+                HIGH: "High",
+              }[task.priority];
 
-                  {task.assignee && <span>Assignee: {task.assignee.name}</span>}
+              const isOverdue =
+                task.dueDate !== null &&
+                task.status !== "DONE" &&
+                new Date(task.dueDate) < new Date();
 
-                  {task.dueDate && (
+              return (
+                <button
+                  key={task.id}
+                  type="button"
+                  onClick={() =>
+                    router.push(
+                      `/teams/${params.teamId}/projects/${params.projectId}/tasks/${task.id}`,
+                    )
+                  }
+                  className="block w-full cursor-pointer rounded-md border p-4 text-left hover:bg-gray-50"
+                >
+                  <span className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-semibold">{task.title}</span>
+
+                    {isOverdue && (
+                      <span className="rounded-md border px-2 py-1 text-xs font-medium">
+                        Overdue
+                      </span>
+                    )}
+                  </span>
+
+                  <span className="mt-3 grid gap-2 text-sm text-gray-600 sm:grid-cols-2 lg:grid-cols-4">
                     <span>
-                      Due: {new Date(task.dueDate).toLocaleDateString()}
+                      <span className="font-medium text-gray-900">Status:</span>{" "}
+                      {statusLabel}
                     </span>
-                  )}
-                </span>
-              </button>
-            ))}
+
+                    <span>
+                      <span className="font-medium text-gray-900">
+                        Priority:
+                      </span>{" "}
+                      {priorityLabel}
+                    </span>
+
+                    <span>
+                      <span className="font-medium text-gray-900">
+                        Assignee:
+                      </span>{" "}
+                      {task.assignee?.name ?? "Unassigned"}
+                    </span>
+
+                    <span>
+                      <span className="font-medium text-gray-900">Due:</span>{" "}
+                      {task.dueDate
+                        ? new Date(task.dueDate).toLocaleDateString()
+                        : "No due date"}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {meta.totalItems > 0 && (
