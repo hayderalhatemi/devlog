@@ -219,7 +219,7 @@ export default function ProjectPage() {
         <p className="mt-1 text-gray-600">{projectDescription}</p>
       )}
 
-      <h2 className="mt-4 text-xl font-semibold">Tasks</h2>
+      <h2 className="mt-4 text-xl font-semibold">Tasks ({meta.totalItems})</h2>
 
       <div className="mt-4 flex flex-wrap items-end gap-3">
         <button
