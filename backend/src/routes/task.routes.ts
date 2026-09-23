@@ -75,6 +75,7 @@ const router = Router();
  *   get:
  *     tags: [Tasks]
  *     summary: Get project tasks
+ *     description: Get paginated project tasks with filtering, searching, and sorting.
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -88,9 +89,67 @@ const router = Router();
  *         required: true
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 10
+ *         description: Number of tasks per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search task title or description
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [TODO, IN_PROGRESS, DONE]
+ *         description: Filter tasks by status
+ *       - in: query
+ *         name: priority
+ *         schema:
+ *           type: string
+ *           enum: [LOW, MEDIUM, HIGH]
+ *         description: Filter tasks by priority
+ *       - in: query
+ *         name: assigneeId
+ *         schema:
+ *           type: string
+ *         description: Filter by user ID or use UNASSIGNED for unassigned tasks
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [createdAt, updatedAt, title, status, dueDate, priority]
+ *           default: createdAt
+ *         description: Field used to sort tasks
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Sort direction
  *     responses:
  *       200:
  *         description: Tasks retrieved successfully
+ *       400:
+ *         description: Invalid query parameters
+ *       401:
+ *         description: Authentication required
+ *       403:
+ *         description: User is not a member of the team
+ *       404:
+ *         description: Project not found
  *
  * /api/teams/{teamId}/projects/{projectId}/tasks/{taskId}:
  *   get:
