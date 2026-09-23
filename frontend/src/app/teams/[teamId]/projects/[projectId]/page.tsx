@@ -74,6 +74,7 @@ export default function ProjectPage() {
   });
 
   const [loading, setLoading] = useState(true);
+  const [tasksLoading, setTasksLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -179,9 +180,11 @@ export default function ProjectPage() {
         setError("Failed to load tasks");
       })
       .finally(() => {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+          setTasksLoading(false);
+        }
       });
-
     return () => {
       controller.abort();
     };
@@ -252,6 +255,7 @@ export default function ProjectPage() {
             id="status-filter"
             value={statusFilter}
             onChange={(event) => {
+              setTasksLoading(true);
               setStatusFilter(
                 event.target.value as "ALL" | "TODO" | "IN_PROGRESS" | "DONE",
               );
@@ -275,6 +279,7 @@ export default function ProjectPage() {
             id="priority-filter"
             value={priorityFilter}
             onChange={(event) => {
+              setTasksLoading(true);
               setPriorityFilter(
                 event.target.value as "ALL" | "LOW" | "MEDIUM" | "HIGH",
               );
@@ -298,6 +303,7 @@ export default function ProjectPage() {
             id="assignee-filter"
             value={assigneeFilter}
             onChange={(event) => {
+              setTasksLoading(true);
               setAssigneeFilter(event.target.value);
               resetPage();
             }}
@@ -323,6 +329,7 @@ export default function ProjectPage() {
             id="sort-by"
             value={sortBy}
             onChange={(event) => {
+              setTasksLoading(true);
               setSortBy(
                 event.target.value as "NEWEST" | "DUE_DATE" | "PRIORITY",
               );
@@ -346,6 +353,7 @@ export default function ProjectPage() {
             type="search"
             value={search}
             onChange={(event) => {
+              setTasksLoading(true);
               setSearch(event.target.value);
               resetPage();
             }}
@@ -363,6 +371,12 @@ export default function ProjectPage() {
       {loading && (
         <p role="status" className="mt-6">
           Loading...
+        </p>
+      )}
+
+      {tasksLoading && !loading && (
+        <p role="status" className="mt-4 text-sm text-gray-600">
+          Updating tasks...
         </p>
       )}
 
@@ -407,7 +421,10 @@ export default function ProjectPage() {
               <button
                 type="button"
                 disabled={!meta.hasPrevPage}
-                onClick={() => setPage((currentPage) => currentPage - 1)}
+                onClick={() => {
+                  setTasksLoading(true);
+                  setPage((currentPage) => currentPage - 1);
+                }}
                 className="cursor-pointer rounded-md border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Previous
@@ -420,7 +437,10 @@ export default function ProjectPage() {
               <button
                 type="button"
                 disabled={!meta.hasNextPage}
-                onClick={() => setPage((currentPage) => currentPage + 1)}
+                onClick={() => {
+                  setTasksLoading(true);
+                  setPage((currentPage) => currentPage + 1);
+                }}
                 className="cursor-pointer rounded-md border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
