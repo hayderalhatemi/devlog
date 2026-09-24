@@ -20,7 +20,7 @@ export const registerUser = async ({
   });
 
   if (existingUser) {
-    throw new AppError('Email already in use', 401);
+    throw new AppError('Email already in use', 409);
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);

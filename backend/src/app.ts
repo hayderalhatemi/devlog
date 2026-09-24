@@ -8,10 +8,15 @@ import taskRoutes from './routes/task.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.js';
+import { env } from './config/env.js';
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: env.FRONTEND_URL,
+  }),
+);
 
 app.use(express.json());
 

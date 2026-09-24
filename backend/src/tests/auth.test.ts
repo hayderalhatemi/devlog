@@ -40,6 +40,25 @@ describe('Auth API', () => {
     expect(response.body.data.email).toBe('test@example.com');
   });
 
+  it('rejects registration with an existing email', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: 'user-1',
+      name: 'Existing User',
+      email: 'test@example.com',
+      password: 'hashed-password',
+      role: 'USER',
+    } as never);
+
+    const response = await request(app).post('/api/auth/register').send({
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'password123',
+    });
+
+    expect(response.status).toBe(409);
+    expect(response.body.success).toBe(false);
+  });
+
   it('logs in with valid credentials', async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue({
       id: 'user-1',
