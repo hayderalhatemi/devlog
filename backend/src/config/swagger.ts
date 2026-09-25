@@ -21,7 +21,12 @@ const options: swaggerJsdoc.Options = {
     },
     servers: [
       {
+        url: 'https://devlog-api-10nk.onrender.com',
+        description: 'Production',
+      },
+      {
         url: 'http://localhost:3001',
+        description: 'Local development',
       },
     ],
   },
