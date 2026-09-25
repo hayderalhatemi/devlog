@@ -4,6 +4,9 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+const DEMO_EMAIL = "demo@devlog.app";
+const DEMO_PASSWORD = "demo1234";
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,9 +15,7 @@ export default function LoginPage() {
 
   const router = useRouter();
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
+  async function login(loginEmail: string, loginPassword: string) {
     setError("");
     setLoading(true);
 
@@ -27,8 +28,8 @@ export default function LoginPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email,
-            password,
+            email: loginEmail,
+            password: loginPassword,
           }),
         },
       );
@@ -46,6 +47,18 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await login(email, password);
+  }
+
+  async function handleDemoLogin() {
+    setEmail(DEMO_EMAIL);
+    setPassword(DEMO_PASSWORD);
+
+    await login(DEMO_EMAIL, DEMO_PASSWORD);
   }
 
   return (
@@ -98,7 +111,22 @@ export default function LoginPage() {
           >
             {loading ? "Signing in..." : "Sign in"}
           </button>
+
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            disabled={loading}
+            className="w-full cursor-pointer rounded-md border border-gray-300 px-4 py-2 font-medium disabled:opacity-50"
+          >
+            Try Demo
+          </button>
         </form>
+
+        <div className="mt-4 rounded-md bg-gray-100 p-3 text-sm">
+          <p className="font-medium">Demo account</p>
+          <p>Email: {DEMO_EMAIL}</p>
+          <p>Password: {DEMO_PASSWORD}</p>
+        </div>
 
         <p className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
