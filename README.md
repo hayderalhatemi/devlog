@@ -4,6 +4,12 @@ DevLog is a full-stack issue tracking application inspired by Jira. It allows te
 
 The project was built as a portfolio project with a focus on REST API design, authentication and authorization, relational data modelling, validation, testing, and a responsive frontend.
 
+## Live Demo
+
+- Frontend: https://devlog-seven-livid.vercel.app
+- API: https://devlog-api-10nk.onrender.com
+- API Documentation: https://devlog-api-10nk.onrender.com/api-docs
+
 ## Features
 
 ### Authentication
@@ -281,6 +287,12 @@ docker build -t devlog-backend .
 
 Run it with the required environment variables for the database, JWT secret, and frontend URL.
 
+## Deployment
+
+- Frontend: Vercel
+- Backend: Render
+- Database: Neon PostgreSQL
+
 ## Project Structure
 
 ```text
@@ -325,4 +337,4 @@ devlog/
 
 ## Status
 
-DevLog is feature-complete for its current portfolio scope. Current work focuses on deployment, documentation, and final production readiness.
+DevLog is deployed and feature-complete for its current portfolio scope.
