@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     title: "DevLog – Issue Tracker",
     description:
       "DevLog is a full-stack issue tracking application inspired by Jira, built with Next.js, TypeScript, Node.js, Express, Prisma and PostgreSQL.",
-    images: ["/og-image.png"],
+    images: ["/og-image-v2.png"],
     type: "website",
   },
 };
