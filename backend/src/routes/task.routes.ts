@@ -13,8 +13,17 @@ import {
 } from '../controllers/task.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { requireTeamRole } from '../middlewares/team-role.middleware.js';
+import { draftTaskController } from '../controllers/ai.controller.js';
 
 const router = Router();
+
+router.post(
+  '/teams/:teamId/projects/:projectId/tasks/draft',
+  authMiddleware,
+  validate(projectParamSchema),
+  requireTeamRole(['OWNER', 'ADMIN', 'MEMBER']),
+  draftTaskController,
+);
 
 /**
  * @openapi
