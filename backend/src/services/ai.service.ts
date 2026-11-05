@@ -10,41 +10,48 @@ export async function draftTask(idea: string) {
       503,
     );
   }
-  const response = await fetch('https://api.openai.com/v1/responses', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${env.OPENAI_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    signal: AbortSignal.timeout(25000),
-    body: JSON.stringify({
-      model: env.OPENAI_MODEL,
-      store: false,
-      max_output_tokens: 800,
-      instructions:
-        'Turn the idea into a short task title and description. ' +
-        'Use the same language as the idea. ' +
-        'Do not invent facts or requirements. ' +
-        'If details are missing, ask questions in the description.',
-      input: idea,
-      text: {
-        format: {
-          type: 'json_schema',
-          name: 'task_draft',
-          strict: true,
-          schema: {
-            type: 'object',
-            properties: {
-              title: { type: 'string' },
-              description: { type: 'string' },
+
+  let response: Response;
+
+  try {
+    response = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      signal: AbortSignal.timeout(25000),
+      body: JSON.stringify({
+        model: env.OPENAI_MODEL,
+        store: false,
+        max_output_tokens: 800,
+        instructions:
+          'Turn the idea into a short task title and description. ' +
+          'Use the same language as the idea. ' +
+          'Do not invent facts or requirements. ' +
+          'If details are missing, ask questions in the description.',
+        input: idea,
+        text: {
+          format: {
+            type: 'json_schema',
+            name: 'task_draft',
+            strict: true,
+            schema: {
+              type: 'object',
+              properties: {
+                title: { type: 'string' },
+                description: { type: 'string' },
+              },
+              required: ['title', 'description'],
+              additionalProperties: false,
             },
-            required: ['title', 'description'],
-            additionalProperties: false,
           },
         },
-      },
-    }),
-  });
+      }),
+    });
+  } catch {
+    throw new AppError('Could not reach AI. Please try again.', 503);
+  }
 
   if (!response.ok) {
     throw new AppError('AI could not write a draft. Please try again.', 502);
