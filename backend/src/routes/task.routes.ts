@@ -14,6 +14,7 @@ import {
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { requireTeamRole } from '../middlewares/team-role.middleware.js';
 import { draftTaskController } from '../controllers/ai.controller.js';
+import { aiLimit } from '../middlewares/ai-limit.middleware.js';
 
 const router = Router();
 
@@ -22,6 +23,7 @@ router.post(
   authMiddleware,
   validate(projectParamSchema),
   requireTeamRole(['OWNER', 'ADMIN', 'MEMBER']),
+  aiLimit,
   draftTaskController,
 );
 
