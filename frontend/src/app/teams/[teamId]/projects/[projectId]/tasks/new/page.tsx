@@ -87,9 +87,7 @@ export default function NewTaskPage() {
         typeof result.data?.title !== "string" ||
         typeof result.data?.description !== "string"
       ) {
-        throw new Error(
-          "AI returned an unreadable draft. Please try again.",
-        );
+        throw new Error("AI returned an unreadable draft. Please try again.");
       }
 
       setDraft({
