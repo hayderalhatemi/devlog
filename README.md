@@ -12,6 +12,18 @@ The project was built as a portfolio project with a focus on REST API design, au
 
 ## Features
 
+### AI Task Drafting
+
+- Turn a short idea into a task title and description using Google Gemini
+- Preview, edit, or discard suggestions before saving
+- Validate AI responses with Zod
+- Restrict access to authenticated team members
+- Limit AI requests to 10 per user per hour
+- Handle connection failures, timeouts, and unavailable AI responses
+
+AI is optional. Users can create tasks manually without an API key.
+Usage limits are stored in server memory and reset when the server restarts.
+
 ### Authentication
 
 - User registration and login
@@ -68,6 +80,7 @@ The project was built as a portfolio project with a focus on REST API design, au
 
 ### Backend
 
+- Google Gemini API for AI-assisted task drafting
 - Node.js
 - Express
 - TypeScript
@@ -152,6 +165,12 @@ Backend API tests use **Vitest** and **Supertest**.
 
 Current tests cover authentication, teams, projects, tasks, authorization, task filtering, search, sorting, assignment, and pagination behavior.
 
+AI route tests cover successful drafts, authentication, team access,
+invalid input, and missing projects. A separate test checks the
+per-user request limit and its reset after one hour.
+
+AI route tests mock the AI service and do not call Gemini.
+
 Run the tests with:
 
 ```bash
@@ -222,6 +241,16 @@ JWT_SECRET=replace-with-a-long-random-secret
 JWT_EXPIRES_IN=1d
 FRONTEND_URL=http://localhost:3000
 ```
+
+Optional: enable AI task drafting by adding a key from
+[Google AI Studio](https://aistudio.google.com/apikey):
+
+```env
+GEMINI_API_KEY=your-gemini-api-key
+```
+
+Keep the key private and never commit `.env`.
+For deployment, set `GEMINI_API_KEY` in the backend hosting environment.
 
 Generate the Prisma client and run migrations:
 
