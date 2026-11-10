@@ -185,7 +185,8 @@ export default function NewTaskPage() {
           </label>
 
           <p className="text-sm text-gray-600">
-            Your idea is sent to OpenAI. Check the suggestion before using it.
+            Your idea is sent to Google Gemini. Check the suggestion before
+            using it.
           </p>
 
           <button
